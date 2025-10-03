@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FireSource
   - Map
+  - monster
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - 
   - 
   - UI World
-  - 
+  - Monster
   - 
   - 
   - 
@@ -51,4 +52,7 @@ TagManager:
     locked: 0
   - name: UI World
     uniqueID: 1619917081
+    locked: 0
+  - name: Monster
+    uniqueID: 2649453523
     locked: 0

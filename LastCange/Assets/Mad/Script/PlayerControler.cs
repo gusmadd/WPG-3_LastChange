@@ -40,6 +40,17 @@ public class PlayerControler : MonoBehaviour
     public Sprite heart1;
     public Sprite heart0; // kosong
 
+    [Header("Attack")]
+    public float attackRange = 1f;      // radius serangan dekat
+    public int attackDamage = 1;        // damage ke monster
+    public LayerMask monsterLayer;      // layer untuk monster
+
+    [Header("Visual Effect")]
+    public SpriteRenderer spriteRenderer;  // drag sprite player di inspector
+    public Color attackColor = new Color(1f, 0.3f, 0.3f, 1f); // merah muda
+    private Color originalColor;
+    public float attackFlashDuration = 0.2f; // durasi efek merah
+
     private Animator anim;
     private bool nearFire = false; // apakah player dekat api
     void Start()
@@ -54,7 +65,10 @@ public class PlayerControler : MonoBehaviour
         currentPain = maxPain;
 
         if (painBarUI != null)
-            painBarUI.SetActive(false); // bar disembunyikan di awal
+            painBarUI.SetActive(false);
+
+        if (spriteRenderer != null)
+            originalColor = spriteRenderer.color;
     }
 
     void Update()
@@ -101,6 +115,10 @@ public class PlayerControler : MonoBehaviour
 
         // Update UI selalu ngikut stats
         UpdatePainBar();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Attack();
+        }
     }
 
     void FixedUpdate()
@@ -222,6 +240,61 @@ public class PlayerControler : MonoBehaviour
         {
             nearFire = false;
             Debug.Log("Menjauh dari api.");
+        }
+    }
+    void Attack()
+    {
+        // cari monster dalam radius
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            Monster monster = enemy.GetComponent<Monster>();
+            if (monster != null)
+            {
+                monster.TakeDamage(attackDamage);
+            }
+        }
+
+        Debug.Log("Player menyerang!");
+        StartCoroutine(AttackFlash()); // efek merah
+    }
+    IEnumerator AttackFlash()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = attackColor;
+            yield return new WaitForSeconds(attackFlashDuration);
+            spriteRenderer.color = originalColor;
+        }
+    }
+    // buat visual debug di editor
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+    public void TakeDamage(int damage)
+    {
+        // Kurangi nyawa player
+        currentLives -= damage;
+
+        // Update UI heart
+        UpdateHeartUI();
+
+        Debug.Log("Player kena damage! Sisa nyawa: " + currentLives);
+
+        if (currentLives <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            // Respawn ke posisi awal (kalau masih ada nyawa)
+            if (spawnPoint != null)
+                transform.position = spawnPoint.position;
+            else
+                transform.position = Vector3.zero; // fallback
         }
     }
 }
