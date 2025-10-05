@@ -3,13 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-<<<<<<< Updated upstream
-  tags: []
-=======
   tags:
   - FireSource
-  - Enemy
->>>>>>> Stashed changes
+  - Map
+  - monster
   layers:
   - Default
   - TransparentFX
@@ -21,8 +18,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - UI World
+  - Monster
   - 
   - 
   - 
@@ -46,4 +43,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Environment
+    uniqueID: 1930161449
+    locked: 0
+  - name: Player
+    uniqueID: 404845561
+    locked: 0
+  - name: UI World
+    uniqueID: 1619917081
+    locked: 0
+  - name: Monster
+    uniqueID: 2649453523
     locked: 0
