@@ -538,7 +538,7 @@ MonoBehaviour:
   maxHP: 3
   moveSpeed: 2
   attackCooldown: 1.5
-  damageDelay: 0.8
+  damageDelay: 1
 --- !u!95 &157121750
 Animator:
   serializedVersion: 5
