@@ -33,14 +33,6 @@ public class Monster : MonoBehaviour
             anim.SetBool("isWalking", direction.magnitude > 0.01f);
         }
     }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            playerInRange = false;
-        }
-    }
     void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
@@ -54,12 +46,21 @@ public class Monster : MonoBehaviour
             }
         }
     }
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            playerInRange = false;
+            Debug.Log("Player keluar dari jangkauan monster!");
+        }
+    }
 
     IEnumerator DealDamageAfterDelay(GameObject target)
     {
         yield return new WaitForSeconds(damageDelay);
 
-        if (target != null && playerInRange) // cek masih kontak atau tidak
+        if (target != null && playerInRange &&
+            Vector2.Distance(transform.position, target.transform.position) < 1.5f)
         {
             PlayerControler pc = target.GetComponent<PlayerControler>();
             if (pc != null)
@@ -73,7 +74,6 @@ public class Monster : MonoBehaviour
             Debug.Log("Damage dibatalkan, player sudah kabur!");
         }
     }
-
     public void TakeDamage(int dmg)
     {
         currentHP -= dmg;
