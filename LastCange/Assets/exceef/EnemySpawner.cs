@@ -4,11 +4,13 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Spawner Settings")]
-    public GameObject enemyPrefab; // prefab EnemyIMO
-    public Transform player;       // referensi player
-    public float spawnInterval = 3f; // waktu spawn antar enemy
-    public float spawnRadius = 8f;   // radius spawn di sekitar player
-    public int maxEnemies = 10;      // batas musuh
+    public GameObject enemyPrefab;
+    public Transform player;
+    public float spawnInterval = 3f;
+    public int maxEnemies = 10;
+
+    [Header("Spawn Points")]
+    public Transform[] spawnPoints; // array titik spawn
 
     private int currentEnemies = 0;
 
@@ -23,8 +25,11 @@ public class EnemySpawner : MonoBehaviour
         {
             if (currentEnemies < maxEnemies)
             {
-                Vector2 spawnPos = (Vector2)player.position + Random.insideUnitCircle * spawnRadius;
-                GameObject newEnemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+                // Pilih titik spawn secara acak dari daftar
+                Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+                // Spawn musuh di posisi spawn point
+                GameObject newEnemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
 
                 EnemyIMO enemyScript = newEnemy.GetComponent<EnemyIMO>();
                 if (enemyScript != null)
@@ -39,7 +44,6 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    // dipanggil musuh saat mati
     public void EnemyDied()
     {
         currentEnemies--;
