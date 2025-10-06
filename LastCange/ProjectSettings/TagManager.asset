@@ -7,6 +7,7 @@ TagManager:
   - FireSource
   - Map
   - monster
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -16,10 +17,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - UI World
   - Monster
+  - Environment
+  - UI World
+  - 
   - 
   - 
   - 
