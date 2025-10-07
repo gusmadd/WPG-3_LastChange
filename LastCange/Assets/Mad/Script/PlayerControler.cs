@@ -141,6 +141,7 @@ public class PlayerControler : MonoBehaviour
             isBurning = true;
             hasFlame = true;
             Debug.Log("Player mulai terbakar (pakai E)!");
+            GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
         }
 
         if (painBarUI != null)
@@ -164,6 +165,8 @@ public class PlayerControler : MonoBehaviour
         isBurning = false;
         hasFlame = false;
         Debug.Log("Api padam.");
+        GameManager.Instance.StopLoopSFX();
+        //GameManager.Instance.PlaySFX(GameManager.Instance.burnEndSFX);
         if (painBarUI != null)
             painBarUI.SetActive(false);
     }
@@ -244,6 +247,9 @@ public class PlayerControler : MonoBehaviour
     }
     void Attack()
     {
+        // mainkan suara serangan
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlaySFX(GameManager.Instance.attackSFX);
         // cari monster dalam radius
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
 

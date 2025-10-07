@@ -22,6 +22,7 @@ public class Candle : MonoBehaviour
     {
         isLit = true;
         flame.SetActive(true);   // hidupkan sprite api lilin
+        GameManager.Instance.PlaySFX(GameManager.Instance.lilinNyalaSFX);
         player.StopBurning();    // player otomatis padam setelah nyalain lilin
         Debug.Log("Candle lit!");
     }
