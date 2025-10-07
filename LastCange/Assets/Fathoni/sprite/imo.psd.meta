@@ -101,8 +101,8 @@ ScriptedImporter:
   rigSpriteImportData:
   - name: Layer 14
     originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
+    pivot: {x: 1.690217, y: 1.465871}
+    alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
@@ -11434,8 +11434,8 @@ ScriptedImporter:
     spritePosition: {x: 470, y: 186}
   - name: Layer 6
     originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
+    pivot: {x: 0.5019853, y: 0.4305353}
+    alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
