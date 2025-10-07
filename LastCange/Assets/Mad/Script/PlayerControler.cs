@@ -44,15 +44,11 @@ public class PlayerControler : MonoBehaviour
     public float attackRange = 1f;      // radius serangan dekat
     public int attackDamage = 1;        // damage ke monster
     public LayerMask monsterLayer;      // layer untuk monster
-
-    [Header("Visual Effect")]
-    public SpriteRenderer spriteRenderer;  // drag sprite player di inspector
-    public Color attackColor = new Color(1f, 0.3f, 0.3f, 1f); // merah muda
-    private Color originalColor;
-    public float attackFlashDuration = 0.2f; // durasi efek merah
-
     private Animator anim;
     private bool nearFire = false; // apakah player dekat api
+    public ParticleSystem fireEffect;
+    private bool facingRight = true;
+
     void Start()
     {
         currentLives = maxLives;
@@ -66,9 +62,15 @@ public class PlayerControler : MonoBehaviour
 
         if (painBarUI != null)
             painBarUI.SetActive(false);
+    }
+    void Flip()
+    {
+        facingRight = !facingRight;
 
-        if (spriteRenderer != null)
-            originalColor = spriteRenderer.color;
+        // ambil skala sekarang
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // balik sumbu X
+        transform.localScale = scale;
     }
 
     void Update()
@@ -77,6 +79,18 @@ public class PlayerControler : MonoBehaviour
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
+        // 🔄 Balik arah seluruh animasi
+        if (moveInput.x > 0.1f && !facingRight)
+        {
+            Flip();
+        }
+        else if (moveInput.x < -0.1f && facingRight)
+        {
+            Flip();
+        }
+
+        // Update animasi jalan
+        anim.SetBool("isWalking", moveInput.magnitude > 0.1f);
 
         // Kalau player terbakar
         if (nearFire && Input.GetKeyDown(KeyCode.E))
@@ -91,35 +105,33 @@ public class PlayerControler : MonoBehaviour
         }
         else
         {
-            // Kalau tidak terbakar → isi lagi pelan²
+            // Regen pelan²
             if (currentPain < maxPain)
             {
-                currentPain += regenSpeed * Time.deltaTime; // regen pelan²
+                currentPain += regenSpeed * Time.deltaTime;
                 if (currentPain > maxPain)
                     currentPain = maxPain;
 
-                // Pastikan bar tetap kelihatan selama belum penuh
                 if (painBarUI != null)
                     painBarUI.SetActive(true);
             }
             else
             {
-                // Kalau sudah penuh → bar hilang
                 if (painBarUI != null)
                     painBarUI.SetActive(false);
             }
         }
 
-        // Update animator parameter
-        anim.SetBool("isBurning", isBurning);
-
-        // Update UI selalu ngikut stats
+        // Update UI
         UpdatePainBar();
+
+        // Attack
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Attack();
         }
     }
+
 
     void FixedUpdate()
     {
@@ -141,6 +153,9 @@ public class PlayerControler : MonoBehaviour
             isBurning = true;
             hasFlame = true;
             Debug.Log("Player mulai terbakar (pakai E)!");
+            GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
+            if (fireEffect != null && !fireEffect.isPlaying)
+                fireEffect.Play();
         }
 
         if (painBarUI != null)
@@ -164,6 +179,10 @@ public class PlayerControler : MonoBehaviour
         isBurning = false;
         hasFlame = false;
         Debug.Log("Api padam.");
+        GameManager.Instance.StopLoopSFX();
+        //GameManager.Instance.PlaySFX(GameManager.Instance.burnEndSFX);
+        if (fireEffect != null && fireEffect.isPlaying)
+            fireEffect.Stop();
         if (painBarUI != null)
             painBarUI.SetActive(false);
     }
@@ -244,6 +263,12 @@ public class PlayerControler : MonoBehaviour
     }
     void Attack()
     {
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlaySFX(GameManager.Instance.attackSFX);
+
+        // mainkan animasi attack
+        anim.SetTrigger("Attack");
+
         // cari monster dalam radius
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
 
@@ -257,16 +282,6 @@ public class PlayerControler : MonoBehaviour
         }
 
         Debug.Log("Player menyerang!");
-        StartCoroutine(AttackFlash()); // efek merah
-    }
-    IEnumerator AttackFlash()
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = attackColor;
-            yield return new WaitForSeconds(attackFlashDuration);
-            spriteRenderer.color = originalColor;
-        }
     }
     // buat visual debug di editor
     void OnDrawGizmosSelected()
