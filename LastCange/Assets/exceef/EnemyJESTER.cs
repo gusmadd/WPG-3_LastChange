@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class EnemyIMO : MonoBehaviour
+public class EnemyJESTER : MonoBehaviour
 {
     [Header("Target")]
     public Transform player;
@@ -9,8 +9,8 @@ public class EnemyIMO : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 2f;
     public float attackRange = 1.5f;
-    public float pullDuration = 0.6f;
-    public float pullSpeed = 5f;
+    public float pushDuration = 0.6f;
+    public float pushSpeed = 5f;
     public float separationDistance = 1.2f;
     public float separationForce = 3f;
 
@@ -28,37 +28,28 @@ public class EnemyIMO : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
-    private Collider2D coll;
 
-    public static EnemyIMO currentPuller = null;
+    public static EnemyJESTER currentAttacker = null;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        coll = GetComponent<Collider2D>();
 
-        // Collider dijadikan trigger agar tidak nabrak fisik
-        if (coll != null)
-            coll.isTrigger = true;
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
+        }
 
-        // Abaikan collision antar Enemy & Player
+        // Abaikan tabrakan antar musuh dan dengan player
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         int playerLayer = LayerMask.NameToLayer("Player");
-
         if (enemyLayer >= 0 && playerLayer >= 0)
         {
             Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
             Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
-        }
-
-        // Cari player otomatis jika belum diset
-        if (player == null)
-        {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null)
-                player = p.transform;
         }
     }
 
@@ -75,10 +66,7 @@ public class EnemyIMO : MonoBehaviour
                 stayTimer = 0f;
             }
         }
-        else
-        {
-            stayTimer = 0f;
-        }
+        else stayTimer = 0f;
 
         if (!isAttacking)
         {
@@ -88,7 +76,7 @@ public class EnemyIMO : MonoBehaviour
 
             rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
 
-            // 🚫 Cegah tumpukan berat (push out sedikit)
+            // 🚫 Cegah tumpukan berat antar Jester
             Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, separationDistance * 0.8f);
             foreach (var col in overlaps)
             {
@@ -122,37 +110,36 @@ public class EnemyIMO : MonoBehaviour
 
         yield return new WaitForSeconds(damageDelay);
 
-        if (currentPuller == null && player != null)
+        if (currentAttacker == null && player != null)
         {
-            currentPuller = this;
-
-            yield return StartCoroutine(PullPlayer());
+            currentAttacker = this;
+            yield return StartCoroutine(PushPlayer());
 
             var playerScript = player.GetComponent<PlayerControlerxcf>();
             if (playerScript != null)
                 playerScript.TakeDamage(damageAmount);
 
-            currentPuller = null;
+            currentAttacker = null;
         }
 
         isAttacking = false;
     }
 
-    IEnumerator PullPlayer()
+    IEnumerator PushPlayer()
     {
         float elapsed = 0f;
-        Vector2 startPos = player.position;
+        Vector2 direction = (player.position - transform.position).normalized;
 
-        while (elapsed < pullDuration && player != null)
+        while (elapsed < pushDuration && player != null)
         {
-            Vector2 targetPos = Vector2.Lerp(startPos, transform.position, elapsed / pullDuration);
-            player.position = Vector2.MoveTowards(player.position, targetPos, pullSpeed * Time.deltaTime);
+            Vector2 targetPos = (Vector2)player.position + direction * 0.8f;
+            player.position = Vector2.MoveTowards(player.position, targetPos, pushSpeed * Time.deltaTime);
             elapsed += Time.deltaTime;
             yield return null;
         }
     }
 
-    // 🌀 Perhitungan separation pakai overlap (lebih halus)
+    // 🔧 versi baru: separation pakai physics overlap
     Vector2 GetSeparationForce()
     {
         Vector2 force = Vector2.zero;
@@ -191,21 +178,12 @@ public class EnemyIMO : MonoBehaviour
 
     public void Die()
     {
-        if (currentPuller == this)
-            currentPuller = null;
-
+        if (currentAttacker == this)
+            currentAttacker = null;
         Destroy(gameObject);
 
-        // Panggil spawner baru
-        EnemySpawnerIMO spawner = FindObjectOfType<EnemySpawnerIMO>();
+        EnemySpawnerJESTER spawner = FindObjectOfType<EnemySpawnerJESTER>();
         if (spawner != null)
             spawner.EnemyDied();
-    }
-
-    // 🧭 Debug radius separation
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, separationDistance);
     }
 }

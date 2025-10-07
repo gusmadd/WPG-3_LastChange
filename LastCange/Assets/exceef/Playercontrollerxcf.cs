@@ -16,23 +16,48 @@ public class PlayerControlerxcf : MonoBehaviour
     public float maxPain = 100f;
     private float currentPain;
 
+    [Header("Regen")]
+    public float regenSpeed = 10f; // <-- pastikan ini ada (isi per detik)
+
     [Header("Burning")]
     public bool isBurning = false;      // apakah player terbakar
     public bool hasFlame = false;       // apakah player bawa api untuk lilin
     public float burnDamagePerSecond = 10f;
 
     [Header("UI Pain Bar")]
-    public Image painFill; 
-    public GameObject painBarUI; 
+    public Image painFill; // drag FillBar (merah)
+    public GameObject painBarUI; // drag parent PainBar (yang ada empty + fill)
 
-    [Header("Respawn")]
-    public Transform spawnPoint; // drag empty object ke sini di Inspector
+    [Header("Lives")]
+    public int maxLives = 3;
+    private int currentLives;
+    public Transform spawnPoint; // drag spawn point di inspector
+
+    [Header("UI Heart Sprites")]
+    public UnityEngine.UI.Image heartUI; // drag image UI (satu object Image)
+    public Sprite heart3; // full (3 nyawa)
+    public Sprite heart2;
+    public Sprite heart1;
+    public Sprite heart0; // kosong
+
+    [Header("Attack")]
+    public float attackRange = 1f;      // radius serangan dekat
+    public int attackDamage = 1;        // damage ke monster
+    public LayerMask monsterLayer;      // layer untuk monster
+
+    [Header("Visual Effect")]
+    public SpriteRenderer spriteRenderer;  // drag sprite player di inspector
+    public Color attackColor = new Color(1f, 0.3f, 0.3f, 1f); // merah muda
+    private Color originalColor;
+    public float attackFlashDuration = 0.2f; // durasi efek merah
 
     private Animator anim;
-    private bool nearFire = false;
-
+    private bool nearFire = false; // apakah player dekat api
     void Start()
     {
+        currentLives = maxLives;
+        UpdateHeartUI();
+
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
@@ -41,6 +66,9 @@ public class PlayerControlerxcf : MonoBehaviour
 
         if (painBarUI != null)
             painBarUI.SetActive(false);
+
+        if (spriteRenderer != null)
+            originalColor = spriteRenderer.color;
     }
 
     void Update()
@@ -61,9 +89,36 @@ public class PlayerControlerxcf : MonoBehaviour
         {
             Burn();
         }
+        else
+        {
+            // Kalau tidak terbakar → isi lagi pelan²
+            if (currentPain < maxPain)
+            {
+                currentPain += regenSpeed * Time.deltaTime; // regen pelan²
+                if (currentPain > maxPain)
+                    currentPain = maxPain;
+
+                // Pastikan bar tetap kelihatan selama belum penuh
+                if (painBarUI != null)
+                    painBarUI.SetActive(true);
+            }
+            else
+            {
+                // Kalau sudah penuh → bar hilang
+                if (painBarUI != null)
+                    painBarUI.SetActive(false);
+            }
+        }
 
         // Update animator parameter
         anim.SetBool("isBurning", isBurning);
+
+        // Update UI selalu ngikut stats
+        UpdatePainBar();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Attack();
+        }
     }
 
     void FixedUpdate()
@@ -71,7 +126,7 @@ public class PlayerControlerxcf : MonoBehaviour
         rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
     }
 
-    void Burn()
+    void Burn() //logic kebakar
     {
         currentPain -= burnDamagePerSecond * Time.deltaTime;
         if (currentPain <= 0)
@@ -79,18 +134,6 @@ public class PlayerControlerxcf : MonoBehaviour
             DieGosong();
         }
     }
-
-    public void TakeDamage(int amount)
-    {
-        currentHP -= amount;
-        Debug.Log("Player kena damage! Sisa HP: " + currentHP);
-
-        if (currentHP <= 0)
-        {
-            Die();
-        }
-    }
-
     void StartBurning()
     {
         if (!isBurning)
@@ -99,11 +142,20 @@ public class PlayerControlerxcf : MonoBehaviour
             hasFlame = true;
             Debug.Log("Player mulai terbakar (pakai E)!");
         }
-        
+
         if (painBarUI != null)
         {
             painBarUI.SetActive(true);
-            painFill.fillAmount = 1f;
+            UpdatePainBar(); // langsung sync ke nilai sekarang
+        }
+    }
+
+    void UpdatePainBar()
+    {
+        if (painFill != null)
+        {
+            float fill = currentPain / maxPain;
+            painFill.fillAmount = Mathf.Clamp01(fill); // biar gak minus atau lebih dari 1
         }
     }
 
@@ -118,39 +170,62 @@ public class PlayerControlerxcf : MonoBehaviour
 
     void DieGosong()
     {
-        Debug.Log("Player gosong terbakar!");
-        Die();
-    }
+        currentLives--;
 
-    void Die()
-    {
-        Debug.Log("U Dead"); // console log
-        Respawn();
-    }
-
-    void Respawn()
-    {
-        // Balikin ke spawnPoint
-        if (spawnPoint != null)
+        if (currentLives > 0)
         {
-            transform.position = spawnPoint.position;
+            Debug.Log("Player kehilangan 1 nyawa! Sisa: " + currentLives);
+
+            // Reset pain tolerance
+            currentPain = maxPain;
+            StopBurning();
+
+            // Teleport ke spawn
+            if (spawnPoint != null)
+                transform.position = spawnPoint.position;
+            else
+                transform.position = Vector3.zero; // fallback
+
+            UpdateHeartUI();
         }
         else
         {
-            transform.position = Vector3.zero; // fallback kalau spawnPoint gak di-set
+            Debug.Log("Game Over! Player kehabisan nyawa.");
+            UpdateHeartUI();
+            // TODO: game over scene / UI
+            gameObject.SetActive(false);
         }
-
-        // Reset HP & pain
-        currentHP = maxHP;
-        currentPain = maxPain;
-
-        // Matikan status terbakar kalau masih nyala
-        StopBurning();
-
-        Debug.Log("Respawn di titik awal.");
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+
+    void Die()
+    {
+        Debug.Log("Player mati (HP habis)");
+        // TODO: animasi/game over
+    }
+    void UpdateHeartUI()
+    {
+        if (heartUI == null) return;
+
+        switch (currentLives)
+        {
+            case 3:
+                heartUI.sprite = heart3;
+                break;
+            case 2:
+                heartUI.sprite = heart2;
+                break;
+            case 1:
+                heartUI.sprite = heart1;
+                break;
+            default:
+                heartUI.sprite = heart0;
+                break;
+        }
+    }
+
+
+    private void OnTriggerEnter2D(Collider2D other)  //deteksi sumber api
     {
         if (other.CompareTag("FireSource"))
         {
@@ -165,6 +240,61 @@ public class PlayerControlerxcf : MonoBehaviour
         {
             nearFire = false;
             Debug.Log("Menjauh dari api.");
+        }
+    }
+    void Attack()
+    {
+        // cari monster dalam radius
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            Monster monster = enemy.GetComponent<Monster>();
+            if (monster != null)
+            {
+                monster.TakeDamage(attackDamage);
+            }
+        }
+
+        Debug.Log("Player menyerang!");
+        StartCoroutine(AttackFlash()); // efek merah
+    }
+    IEnumerator AttackFlash()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = attackColor;
+            yield return new WaitForSeconds(attackFlashDuration);
+            spriteRenderer.color = originalColor;
+        }
+    }
+    // buat visual debug di editor
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+    public void TakeDamage(int damage)
+    {
+        // Kurangi nyawa player
+        currentLives -= damage;
+
+        // Update UI heart
+        UpdateHeartUI();
+
+        Debug.Log("Player kena damage! Sisa nyawa: " + currentLives);
+
+        if (currentLives <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            // Respawn ke posisi awal (kalau masih ada nyawa)
+            if (spawnPoint != null)
+                transform.position = spawnPoint.position;
+            else
+                transform.position = Vector3.zero; // fallback
         }
     }
 }
