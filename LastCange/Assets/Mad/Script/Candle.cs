@@ -18,7 +18,10 @@ public class Candle : MonoBehaviour
     public Image portalProgressBar; // drag UI Image (fill type radial/horizontal)
     public Vector3 progressBarOffset = new Vector3(0, 2f, 0);
 
+    // shared (global antar semua lilin)
     private static bool portalActivated = false;
+    private static GameObject staticPortal;
+    private static Image staticProgressBar;
     private static float playerStayTimer = 0f;
     private static bool playerInsidePortal = false;
 
@@ -43,6 +46,7 @@ public class Candle : MonoBehaviour
         isLit = true;
         flame.SetActive(true);
         player.StopBurning();
+        GameManager.Instance.PlaySFX(GameManager.Instance.lilinNyalaSFX);
         Debug.Log("🔥 Lilin menyala!");
         CheckAllCandles();
     }
@@ -54,21 +58,23 @@ public class Candle : MonoBehaviour
             if (!c.isLit) return;
         }
 
-        // Semua lilin nyala → aktifkan portal
+        // Semua lilin nyala → aktifkan portal (sekali aja)
         if (!portalActivated && victoryPortal != null)
         {
             victoryPortal.SetActive(true);
             portalActivated = true;
+            staticPortal = victoryPortal;
+            staticProgressBar = portalProgressBar;
             Debug.Log("✨ Semua lilin menyala! Portal aktif!");
         }
     }
 
     void Update()
     {
-        if (!portalActivated || victoryPortal == null) return;
+        if (!portalActivated || staticPortal == null) return;
 
         // deteksi player di portal
-        Collider2D[] hits = Physics2D.OverlapCircleAll(victoryPortal.transform.position, 1.5f);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(staticPortal.transform.position, 1.5f);
         playerInsidePortal = false;
 
         foreach (Collider2D col in hits)
@@ -80,19 +86,18 @@ public class Candle : MonoBehaviour
             }
         }
 
+        // update timer dan bar
         if (playerInsidePortal)
         {
             playerStayTimer += Time.deltaTime;
 
-            // update progress bar UI
-            if (portalProgressBar != null)
+            if (staticProgressBar != null)
             {
-                portalProgressBar.gameObject.SetActive(true);
-                portalProgressBar.fillAmount = playerStayTimer / portalStayTime;
+                staticProgressBar.gameObject.SetActive(true);
+                staticProgressBar.fillAmount = playerStayTimer / portalStayTime;
 
-                // posisi bar mengikuti portal
-                portalProgressBar.transform.position = Camera.main.WorldToScreenPoint(
-                    victoryPortal.transform.position + progressBarOffset
+                staticProgressBar.transform.position = Camera.main.WorldToScreenPoint(
+                    staticPortal.transform.position + progressBarOffset
                 );
             }
 
@@ -110,10 +115,10 @@ public class Candle : MonoBehaviour
                 playerStayTimer = 0;
             }
 
-            if (portalProgressBar != null)
+            if (staticProgressBar != null)
             {
-                portalProgressBar.fillAmount = 0;
-                portalProgressBar.gameObject.SetActive(false);
+                staticProgressBar.fillAmount = 0;
+                staticProgressBar.gameObject.SetActive(false);
             }
         }
     }
