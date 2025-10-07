@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Spawner Settings")]
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs; // ← sekarang array prefab
     public Transform player;
     public float spawnInterval = 3f;
     public int maxEnemies = 10;
@@ -25,16 +25,21 @@ public class EnemySpawner : MonoBehaviour
         {
             if (currentEnemies < maxEnemies)
             {
-                // Pilih titik spawn secara acak dari daftar
+                // Pilih prefab musuh secara acak dari daftar
+                GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
+                // Pilih titik spawn secara acak
                 Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
                 // Spawn musuh di posisi spawn point
-                GameObject newEnemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                GameObject newEnemy = Instantiate(randomEnemyPrefab, spawnPoint.position, Quaternion.identity);
 
+                // Set referensi player kalau skrip musuh butuh
                 EnemyIMO enemyScript = newEnemy.GetComponent<EnemyIMO>();
                 if (enemyScript != null)
                 {
-                    enemyScript.player = player;
+                    // optional: kalau script Monster butuh referensi player
+                    // enemyScript.SetPlayer(player);
                 }
 
                 currentEnemies++;
