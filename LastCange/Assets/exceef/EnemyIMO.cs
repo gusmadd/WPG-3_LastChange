@@ -9,27 +9,31 @@ public class EnemyIMO : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 2f;
     public float attackRange = 1.5f;
-    public float pullDuration = 0.5f;
+    public float pullDuration = 0.6f;
     public float pullSpeed = 5f;
+    public float separationDistance = 1.2f;
+    public float separationForce = 3f;
 
-    [Header("Attack")]
+    [Header("Attack Settings")]
+    public int damageAmount = 1;
     public float attackCooldown = 1.5f;
+    public float damageDelay = 0.5f;
+    public float stayTimeToTrigger = 1.2f;
+
     private float lastAttackTime;
+    private bool isAttacking = false;
+    private bool playerInside = false;
+    private float stayTimer = 0f;
 
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
-<<<<<<< Updated upstream
     private bool isAttacking = false;
 =======
-    private Collider2D coll;
-    private bool facingRight = false;
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
 =======
->>>>>>> Stashed changes
+    private Collider2D coll;
 
-    // 🔑 Biar ga rebutan
+
     public static EnemyIMO currentPuller = null;
 
     void Start()
@@ -37,11 +41,28 @@ public class EnemyIMO : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        coll = GetComponent<Collider2D>();
 
+        // Collider dijadikan trigger agar tidak nabrak fisik
+        if (coll != null)
+            coll.isTrigger = true;
+
+        // Abaikan collision antar Enemy & Player
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        int playerLayer = LayerMask.NameToLayer("Player");
+
+        if (enemyLayer >= 0 && playerLayer >= 0)
+        {
+            Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
+            Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
+        }
+
+        // Cari player otomatis jika belum diset
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) player = p.transform;
+            if (p != null)
+                player = p.transform;
         }
     }
     void Flip()
@@ -58,16 +79,23 @@ public class EnemyIMO : MonoBehaviour
     {
         if (player == null) return;
 
-        float distance = Vector2.Distance(transform.position, player.position);
-
-        if (distance <= attackRange && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
+        if (playerInside && !isAttacking)
         {
-            StartCoroutine(Attack());
+            stayTimer += Time.deltaTime;
+            if (stayTimer >= stayTimeToTrigger && Time.time >= lastAttackTime + attackCooldown)
+            {
+                StartCoroutine(Attack());
+                stayTimer = 0f;
+            }
         }
-        else if (!isAttacking)
+        else
+        {
+            stayTimer = 0f;
+        }
+
+        if (!isAttacking)
         {
             Vector2 direction = (player.position - transform.position).normalized;
-<<<<<<< Updated upstream
             rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
 
             if (spriteRenderer != null)
@@ -99,10 +127,7 @@ public class EnemyIMO : MonoBehaviour
                     rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
                 }
             }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
             if (anim != null)
                 anim.SetBool("isMoving", true);
         }
@@ -121,31 +146,22 @@ public class EnemyIMO : MonoBehaviour
         if (anim != null)
             anim.SetTrigger("Attack");
 
-        yield return new WaitForSeconds(0.2f); // delay sebelum hit
+        yield return new WaitForSeconds(damageDelay);
 
-        // cek: kalau belum ada yg narik, klaim jadi puller
         if (currentPuller == null && player != null)
         {
             currentPuller = this;
 
-<<<<<<< Updated upstream
             // damage player
             var playerScript = player.GetComponent<PlayerControlerxcf>();
 =======
             yield return StartCoroutine(PullPlayer());
 
             var playerScript = player.GetComponent<PlayerControler>();
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
             if (playerScript != null)
-                playerScript.TakeDamage(10);
+                playerScript.TakeDamage(damageAmount);
 
-            // tarik player
-            yield return StartCoroutine(PullPlayer());
-
-            // selesai narik → bebasin
             currentPuller = null;
         }
 
@@ -155,25 +171,71 @@ public class EnemyIMO : MonoBehaviour
     IEnumerator PullPlayer()
     {
         float elapsed = 0f;
+        Vector2 startPos = player.position;
+
         while (elapsed < pullDuration && player != null)
         {
-            player.position = Vector2.MoveTowards(
-                player.position,
-                transform.position,
-                pullSpeed * Time.deltaTime
-            );
+            Vector2 targetPos = Vector2.Lerp(startPos, transform.position, elapsed / pullDuration);
+            player.position = Vector2.MoveTowards(player.position, targetPos, pullSpeed * Time.deltaTime);
             elapsed += Time.deltaTime;
             yield return null;
         }
     }
 
+    // 🌀 Perhitungan separation pakai overlap (lebih halus)
+    Vector2 GetSeparationForce()
+    {
+        Vector2 force = Vector2.zero;
+        Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, separationDistance);
+
+        foreach (Collider2D col in nearby)
+        {
+            if (col == null || col.gameObject == gameObject) continue;
+            if (!col.CompareTag("Enemy")) continue;
+
+            Vector2 away = (Vector2)(transform.position - col.transform.position);
+            float dist = away.magnitude;
+            if (dist < 0.01f) continue;
+
+            away.Normalize();
+            force += away * (separationForce / dist);
+        }
+
+        return force;
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+            playerInside = true;
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            playerInside = false;
+            stayTimer = 0f;
+        }
+    }
+
     public void Die()
     {
-        if (currentPuller == this) currentPuller = null; // kalau mati pas narik, lepas giliran
+        if (currentPuller == this)
+            currentPuller = null;
+
         Destroy(gameObject);
 
-        EnemySpawner spawner = FindObjectOfType<EnemySpawner>();
+        // Panggil spawner baru
+        EnemySpawnerIMO spawner = FindObjectOfType<EnemySpawnerIMO>();
         if (spawner != null)
             spawner.EnemyDied();
+    }
+
+    // 🧭 Debug radius separation
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, separationDistance);
     }
 }
