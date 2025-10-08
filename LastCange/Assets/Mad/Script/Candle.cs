@@ -74,17 +74,19 @@ public class Candle : MonoBehaviour
         if (!portalActivated || staticPortal == null) return;
 
         // deteksi player di portal
-        Collider2D[] hits = Physics2D.OverlapCircleAll(staticPortal.transform.position, 1.5f);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(staticPortal.transform.position, 1.5f, LayerMask.GetMask("Player"));
         playerInsidePortal = false;
 
         foreach (Collider2D col in hits)
         {
+            // hanya tanggapi objek bertag "Player"
             if (col.CompareTag("Player"))
             {
                 playerInsidePortal = true;
                 break;
             }
         }
+
 
         // update timer dan bar
         if (playerInsidePortal)

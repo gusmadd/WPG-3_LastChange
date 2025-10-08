@@ -28,7 +28,7 @@ public class EnemyJESTER : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
-
+    private bool facingRight = false;
     public static EnemyJESTER currentAttacker = null;
 
     void Start()
@@ -51,6 +51,15 @@ public class EnemyJESTER : MonoBehaviour
             Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
             Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
         }
+    }
+    void Flip()
+    {
+        facingRight = !facingRight;
+
+        // ambil skala sekarang
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // balik sumbu X
+        transform.localScale = scale;
     }
 
     void Update()
@@ -75,6 +84,14 @@ public class EnemyJESTER : MonoBehaviour
             Vector2 finalDir = (direction + separation).normalized;
 
             rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
+            if (finalDir.x > 0.1f && !facingRight)
+            {
+                Flip();
+            }
+            else if (finalDir.x < -0.1f && facingRight)
+            {
+                Flip();
+            }
 
             // 🚫 Cegah tumpukan berat antar Jester
             Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, separationDistance * 0.8f);
@@ -86,10 +103,6 @@ public class EnemyJESTER : MonoBehaviour
                     rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
                 }
             }
-
-            if (spriteRenderer != null)
-                spriteRenderer.flipX = direction.x < 0;
-
             if (anim != null)
                 anim.SetBool("isMoving", true);
         }
@@ -115,7 +128,7 @@ public class EnemyJESTER : MonoBehaviour
             currentAttacker = this;
             yield return StartCoroutine(PushPlayer());
 
-            var playerScript = player.GetComponent<PlayerControlerxcf>();
+            var playerScript = player.GetComponent<PlayerControler>();
             if (playerScript != null)
                 playerScript.TakeDamage(damageAmount);
 

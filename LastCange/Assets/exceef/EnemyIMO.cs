@@ -28,7 +28,11 @@ public class EnemyIMO : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+    private bool isAttacking = false;
+=======
+=======
     private Collider2D coll;
+
 
     public static EnemyIMO currentPuller = null;
 
@@ -61,6 +65,15 @@ public class EnemyIMO : MonoBehaviour
                 player = p.transform;
         }
     }
+    void Flip()
+    {
+        facingRight = !facingRight;
+
+        // ambil skala sekarang
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // balik sumbu X
+        transform.localScale = scale;
+    }
 
     void Update()
     {
@@ -83,10 +96,26 @@ public class EnemyIMO : MonoBehaviour
         if (!isAttacking)
         {
             Vector2 direction = (player.position - transform.position).normalized;
+            rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
+
+            if (spriteRenderer != null)
+                spriteRenderer.flipX = direction.x < 0;
+
+=======
             Vector2 separation = GetSeparationForce();
             Vector2 finalDir = (direction + separation).normalized;
 
             rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
+            // --- Tambahkan ini di bawah gerakan ---
+            if (finalDir.x > 0.1f && !facingRight)
+            {
+                Flip();
+            }
+            else if (finalDir.x < -0.1f && facingRight)
+            {
+                Flip();
+            }
+
 
             // 🚫 Cegah tumpukan berat (push out sedikit)
             Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, separationDistance * 0.8f);
@@ -98,9 +127,6 @@ public class EnemyIMO : MonoBehaviour
                     rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
                 }
             }
-
-            if (spriteRenderer != null)
-                spriteRenderer.flipX = direction.x < 0;
 
             if (anim != null)
                 anim.SetBool("isMoving", true);
@@ -126,9 +152,13 @@ public class EnemyIMO : MonoBehaviour
         {
             currentPuller = this;
 
+            // damage player
+            var playerScript = player.GetComponent<PlayerControlerxcf>();
+=======
             yield return StartCoroutine(PullPlayer());
 
-            var playerScript = player.GetComponent<PlayerControlerxcf>();
+            var playerScript = player.GetComponent<PlayerControler>();
+
             if (playerScript != null)
                 playerScript.TakeDamage(damageAmount);
 
