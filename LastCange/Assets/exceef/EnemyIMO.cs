@@ -28,7 +28,6 @@ public class EnemyIMO : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
-    private bool isAttacking = false;
     private Collider2D coll;
     private bool facingRight = false;
 
@@ -149,10 +148,10 @@ public class EnemyIMO : MonoBehaviour
             currentPuller = this;
 
             // damage player
-            var playerScript = player.GetComponent<PlayerControlerxcf>();
+            var playerScript = player.GetComponent<PlayerControler>();
             yield return StartCoroutine(PullPlayer());
 
-            var playerScript = player.GetComponent<PlayerControler>();
+            playerScript = player.GetComponent<PlayerControler>();
             if (playerScript != null)
                 playerScript.TakeDamage(damageAmount);
 
