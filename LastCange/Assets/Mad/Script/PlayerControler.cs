@@ -44,10 +44,12 @@ public class PlayerControler : MonoBehaviour
     public float attackRange = 1f;      // radius serangan dekat
     public int attackDamage = 1;        // damage ke monster
     public LayerMask monsterLayer;      // layer untuk monster
+    private float lastAttackTime;
+    public float attackCooldown = 1f;
     private Animator anim;
     private bool nearFire = false; // apakah player dekat api
     public ParticleSystem fireEffect;
-    private bool facingRight = true;
+   // private bool facingRight = true;
 
     void Start()
     {
@@ -63,15 +65,15 @@ public class PlayerControler : MonoBehaviour
         if (painBarUI != null)
             painBarUI.SetActive(false);
     }
-    void Flip()
-    {
-        facingRight = !facingRight;
+    //void Flip()
+   // {
+   //     facingRight = !facingRight;
 
         // ambil skala sekarang
-        Vector3 scale = transform.localScale;
-        scale.x *= -1; // balik sumbu X
-        transform.localScale = scale;
-    }
+  //      Vector3 scale = transform.localScale;
+   //     scale.x *= -1; // balik sumbu X
+   //     transform.localScale = scale;
+  //  }
 
     void Update()
     {
@@ -80,14 +82,15 @@ public class PlayerControler : MonoBehaviour
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
         // 🔄 Balik arah seluruh animasi
-        if (moveInput.x > 0.1f && !facingRight)
-        {
-            Flip();
-        }
-        else if (moveInput.x < -0.1f && facingRight)
-        {
-            Flip();
-        }
+        
+       // if (moveInput.x > 0.1f && !facingRight)
+       // {
+       //     Flip();
+       // }
+      //  else if (moveInput.x < -0.1f && facingRight)
+      //  {
+      //      Flip();
+      //  }
 
         // Update animasi jalan
         anim.SetBool("isWalking", moveInput.magnitude > 0.1f);
@@ -263,11 +266,14 @@ public class PlayerControler : MonoBehaviour
     }
     void Attack()
     {
+        if (Time.time < lastAttackTime + attackCooldown)
+            return; // ⛔ masih cooldown
+
+        lastAttackTime = Time.time; // simpan waktu terakhir serang
+        anim.SetTrigger("Attack");
+
         if (GameManager.Instance != null)
             GameManager.Instance.PlaySFX(GameManager.Instance.attackSFX);
-
-        // mainkan animasi attack
-        anim.SetTrigger("Attack");
 
         // cari monster dalam radius
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
@@ -278,6 +284,7 @@ public class PlayerControler : MonoBehaviour
             if (monster != null)
             {
                 monster.TakeDamage(attackDamage);
+                Debug.Log("💥 Monster kena serangan!");
             }
         }
 

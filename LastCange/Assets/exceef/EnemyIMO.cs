@@ -19,7 +19,12 @@ public class EnemyIMO : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+<<<<<<< Updated upstream
     private bool isAttacking = false;
+=======
+    private Collider2D coll;
+    private bool facingRight = false;
+>>>>>>> Stashed changes
 
     // 🔑 Biar ga rebutan
     public static EnemyIMO currentPuller = null;
@@ -36,6 +41,15 @@ public class EnemyIMO : MonoBehaviour
             if (p != null) player = p.transform;
         }
     }
+    void Flip()
+    {
+        facingRight = !facingRight;
+
+        // ambil skala sekarang
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // balik sumbu X
+        transform.localScale = scale;
+    }
 
     void Update()
     {
@@ -50,11 +64,39 @@ public class EnemyIMO : MonoBehaviour
         else if (!isAttacking)
         {
             Vector2 direction = (player.position - transform.position).normalized;
+<<<<<<< Updated upstream
             rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
 
             if (spriteRenderer != null)
                 spriteRenderer.flipX = direction.x < 0;
 
+=======
+            Vector2 separation = GetSeparationForce();
+            Vector2 finalDir = (direction + separation).normalized;
+
+            rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
+            // --- Tambahkan ini di bawah gerakan ---
+            if (finalDir.x > 0.1f && !facingRight)
+            {
+                Flip();
+            }
+            else if (finalDir.x < -0.1f && facingRight)
+            {
+                Flip();
+            }
+
+
+            // 🚫 Cegah tumpukan berat (push out sedikit)
+            Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, separationDistance * 0.8f);
+            foreach (var col in overlaps)
+            {
+                if (col != null && col.CompareTag("Enemy") && col.gameObject != gameObject)
+                {
+                    Vector2 pushDir = (transform.position - col.transform.position).normalized;
+                    rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
+                }
+            }
+>>>>>>> Stashed changes
             if (anim != null)
                 anim.SetBool("isMoving", true);
         }
@@ -80,8 +122,14 @@ public class EnemyIMO : MonoBehaviour
         {
             currentPuller = this;
 
+<<<<<<< Updated upstream
             // damage player
             var playerScript = player.GetComponent<PlayerControlerxcf>();
+=======
+            yield return StartCoroutine(PullPlayer());
+
+            var playerScript = player.GetComponent<PlayerControler>();
+>>>>>>> Stashed changes
             if (playerScript != null)
                 playerScript.TakeDamage(10);
 
