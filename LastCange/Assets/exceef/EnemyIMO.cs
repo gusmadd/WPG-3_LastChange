@@ -24,6 +24,9 @@ public class EnemyIMO : MonoBehaviour
 =======
     private Collider2D coll;
     private bool facingRight = false;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     // 🔑 Biar ga rebutan
@@ -96,6 +99,9 @@ public class EnemyIMO : MonoBehaviour
                     rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
                 }
             }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             if (anim != null)
                 anim.SetBool("isMoving", true);
@@ -129,6 +135,9 @@ public class EnemyIMO : MonoBehaviour
             yield return StartCoroutine(PullPlayer());
 
             var playerScript = player.GetComponent<PlayerControler>();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             if (playerScript != null)
                 playerScript.TakeDamage(10);
