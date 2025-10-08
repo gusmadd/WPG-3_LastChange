@@ -29,10 +29,8 @@ public class EnemyIMO : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer;
     private bool isAttacking = false;
-=======
-=======
     private Collider2D coll;
-
+    private bool facingRight = false;
 
     public static EnemyIMO currentPuller = null;
 
@@ -101,7 +99,6 @@ public class EnemyIMO : MonoBehaviour
             if (spriteRenderer != null)
                 spriteRenderer.flipX = direction.x < 0;
 
-=======
             Vector2 separation = GetSeparationForce();
             Vector2 finalDir = (direction + separation).normalized;
 
@@ -127,7 +124,6 @@ public class EnemyIMO : MonoBehaviour
                     rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
                 }
             }
-
             if (anim != null)
                 anim.SetBool("isMoving", true);
         }
@@ -154,11 +150,9 @@ public class EnemyIMO : MonoBehaviour
 
             // damage player
             var playerScript = player.GetComponent<PlayerControlerxcf>();
-=======
             yield return StartCoroutine(PullPlayer());
 
             var playerScript = player.GetComponent<PlayerControler>();
-
             if (playerScript != null)
                 playerScript.TakeDamage(damageAmount);
 

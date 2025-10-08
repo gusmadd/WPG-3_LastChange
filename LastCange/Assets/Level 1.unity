@@ -3274,8 +3274,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569412206}
   m_CullTransparentMesh: 1
---- !u!1 &1635987609
-=======
+
 --- !u!1 &1589622408
 GameObject:
   m_ObjectHideFlags: 0
@@ -3284,21 +3283,18 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1635987610}
-  m_Layer: 0
-  m_Name: 2
+
   - component: {fileID: 1589622411}
   - component: {fileID: 1589622410}
   - component: {fileID: 1589622409}
   m_Layer: 0
   m_Name: Spawner
-
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1635987610
+
 --- !u!114 &1589622409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3334,7 +3330,6 @@ MonoBehaviour:
   spawnRadius: 15
   maxEnemies: 6
 --- !u!4 &1589622411
-
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3387,9 +3382,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-=======
 --- !u!1 &1856907925
 GameObject:
   m_ObjectHideFlags: 0
