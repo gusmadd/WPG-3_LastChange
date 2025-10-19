@@ -158,7 +158,7 @@ MonoBehaviour:
   optionsPanel: {fileID: 661198157}
   bgmSource: {fileID: 43941626}
   sfxSource: {fileID: 43941625}
-  mainMenuBGM: {fileID: 8300000, guid: d7cce049f97766e45b93bcb002f3c0df, type: 3}
+  mainMenuBGM: {fileID: 8300000, guid: 36554b1bfc4da2449928a99c5a805b04, type: 3}
   level1BGM: {fileID: 8300000, guid: fb0a41e787365d542b15f9ca7b8f07ce, type: 3}
   level0BGM: {fileID: 8300000, guid: fb0a41e787365d542b15f9ca7b8f07ce, type: 3}
   buttonClickSFX: {fileID: 8300000, guid: 92f97926ef7c005419c8c3426d630145, type: 3}
