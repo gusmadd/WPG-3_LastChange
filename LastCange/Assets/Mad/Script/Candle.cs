@@ -8,7 +8,7 @@ public class Candle : MonoBehaviour
 {
     [Header("Candle Settings")]
     public GameObject flame; // sprite api
-    private bool isLit = false;
+    public bool isLit = false;
     public static List<Candle> allCandles = new List<Candle>();
 
     [Header("Portal Settings")]
@@ -133,4 +133,5 @@ public class Candle : MonoBehaviour
             Gizmos.DrawWireSphere(victoryPortal.transform.position, 1.5f);
         }
     }
+
 }

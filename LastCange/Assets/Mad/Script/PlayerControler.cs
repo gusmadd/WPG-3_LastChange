@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerControler : MonoBehaviour
 {
+    private TutorialManager tutorialManager;
+    private bool nearFireTutorialShown = false;
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
@@ -39,6 +44,8 @@ public class PlayerControler : MonoBehaviour
     public Sprite heart2;
     public Sprite heart1;
     public Sprite heart0; // kosong
+    [Header("Control Lock")]
+    public bool canMove = true;
 
     [Header("Attack")]
     public float attackRange = 1f;      // radius serangan dekat
@@ -49,10 +56,13 @@ public class PlayerControler : MonoBehaviour
     private Animator anim;
     private bool nearFire = false; // apakah player dekat api
     public ParticleSystem fireEffect;
-   // private bool facingRight = true;
+    // private bool facingRight = true;
+    [HideInInspector] public bool canAttack = true; // 🔥 Tambahan
 
     void Start()
     {
+        tutorialManager = FindObjectOfType<TutorialManager>();
+
         currentLives = maxLives;
         UpdateHeartUI();
 
@@ -66,31 +76,38 @@ public class PlayerControler : MonoBehaviour
             painBarUI.SetActive(false);
     }
     //void Flip()
-   // {
-   //     facingRight = !facingRight;
+    // {
+    //     facingRight = !facingRight;
 
-        // ambil skala sekarang
-  //      Vector3 scale = transform.localScale;
-   //     scale.x *= -1; // balik sumbu X
-   //     transform.localScale = scale;
-  //  }
+    // ambil skala sekarang
+    //      Vector3 scale = transform.localScale;
+    //     scale.x *= -1; // balik sumbu X
+    //     transform.localScale = scale;
+    //  }
 
     void Update()
     {
+        if (!canMove)
+        {
+            // hentikan semua input
+            moveInput = Vector2.zero;
+            anim.SetBool("isWalking", false);
+            return;
+        }
         // Input
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
         // 🔄 Balik arah seluruh animasi
-        
-       // if (moveInput.x > 0.1f && !facingRight)
-       // {
-       //     Flip();
-       // }
-      //  else if (moveInput.x < -0.1f && facingRight)
-      //  {
-      //      Flip();
-      //  }
+
+        // if (moveInput.x > 0.1f && !facingRight)
+        // {
+        //     Flip();
+        // }
+        //  else if (moveInput.x < -0.1f && facingRight)
+        //  {
+        //      Flip();
+        //  }
 
         // Update animasi jalan
         anim.SetBool("isWalking", moveInput.magnitude > 0.1f);
@@ -182,8 +199,11 @@ public class PlayerControler : MonoBehaviour
         isBurning = false;
         hasFlame = false;
         Debug.Log("Api padam.");
-        GameManager.Instance.StopLoopSFX();
-        //GameManager.Instance.PlaySFX(GameManager.Instance.burnEndSFX);
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StopLoopSFX();
+            //GameManager.Instance.PlaySFX(GameManager.Instance.burnEndSFX);
+        }
         if (fireEffect != null && fireEffect.isPlaying)
             fireEffect.Stop();
         if (painBarUI != null)
@@ -247,25 +267,39 @@ public class PlayerControler : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)  //deteksi sumber api
+    private void OnTriggerEnter2D(Collider2D other)  // deteksi sumber api
     {
         if (other.CompareTag("FireSource"))
         {
             nearFire = true;
             Debug.Log("Dekat api. Tekan E untuk terbakar.");
+
+            // === Tambahan untuk tutorial ===
+            if (tutorialManager != null)
+            {
+                tutorialManager.SetPlayerNearFire(true);
+            }
         }
     }
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("FireSource"))
         {
             nearFire = false;
-            Debug.Log("Menjauh dari api.");
+
+            // === Tambahan untuk tutorial ===
+            if (tutorialManager != null)
+            {
+                tutorialManager.SetPlayerNearFire(false);
+            }
         }
     }
+
     void Attack()
     {
+        if (!canAttack) return; // 🚫 kalau sedang dikunci tutorial
         if (Time.time < lastAttackTime + attackCooldown)
             return; // ⛔ masih cooldown
 
@@ -298,6 +332,25 @@ public class PlayerControler : MonoBehaviour
     }
     public void TakeDamage(int damage)
     {
+        if (SceneManager.GetActiveScene().name == "Level 0")
+        {
+            Debug.Log("⚠️ [Tutorial] Player tidak menerima damage di scene Level 0.");
+            return;
+        }
+        var tutorialEnemy = FindObjectOfType<EnemyIMO>();
+        if (tutorialEnemy != null && tutorialEnemy.noDamageInTutorial)
+        {
+            Debug.Log("⚠️ [Tutorial] Player tidak menerima damage (diblokir oleh PlayerControler).");
+            return;
+        }
+        // 🔒 Hard block: jika ada EnemyIMO di scene dan sedang mode tutorial, abaikan damage
+        EnemyIMO enemy = FindObjectOfType<EnemyIMO>();
+        if (enemy != null && enemy.noDamageInTutorial)
+        {
+            Debug.Log("⚠️ [Tutorial] Player tidak menerima damage karena mode tutorial aktif.");
+            return;
+        }
+
         // Kurangi nyawa player
         currentLives -= damage;
 
@@ -319,4 +372,16 @@ public class PlayerControler : MonoBehaviour
                 transform.position = Vector3.zero; // fallback
         }
     }
+
+    public void LockMovement()
+    {
+        canMove = false;
+        rb.velocity = Vector2.zero;
+    }
+
+    public void UnlockMovement()
+    {
+        canMove = true;
+    }
+
 }

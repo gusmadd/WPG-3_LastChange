@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private AudioSource loopSFXSource;
     public AudioClip mainMenuBGM;
     public AudioClip level1BGM;
+    public AudioClip level0BGM;
     public AudioClip buttonClickSFX;
     public AudioClip lilinNyalaSFX;
 
@@ -95,6 +96,9 @@ public class GameManager : MonoBehaviour
             case "MainMenu":
                 PlayBGM(mainMenuBGM);
                 break;
+            case "Level 0":
+                PlayBGM(level0BGM);
+                break;
             case "Level 1":
                 PlayBGM(level1BGM);
                 break;
@@ -154,7 +158,7 @@ public class GameManager : MonoBehaviour
     public void PlayGame()
     {
         PlaySFX(buttonClickSFX);
-        SceneManager.LoadScene("Level 1");
+        SceneManager.LoadScene("Level 0");
     }
 
     public void LoadNextLevel()

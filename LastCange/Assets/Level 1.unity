@@ -4466,7 +4466,7 @@ PrefabInstance:
       objectReference: {fileID: 1188167569}
     - target: {fileID: 7154433846809952289, guid: d91555c0da2d24547a3a79ea47a21545, type: 3}
       propertyPath: moveSpeed
-      value: 15
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7154433846809952289, guid: d91555c0da2d24547a3a79ea47a21545, type: 3}
       propertyPath: painBarUI

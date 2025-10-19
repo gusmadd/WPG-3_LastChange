@@ -137,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 7088f74c02d25e74e9d1e189f71fe562, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.18
+      value: -4.251
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 7088f74c02d25e74e9d1e189f71fe562, type: 3}
       propertyPath: m_LocalPosition.z
@@ -536,9 +536,8 @@ MonoBehaviour:
   monsterLayer:
     serializedVersion: 2
     m_Bits: 0
-  spriteRenderer: {fileID: 0}
-  attackColor: {r: 1, g: 0.3, b: 0.3, a: 1}
-  attackFlashDuration: 0.2
+  attackCooldown: 1
+  fireEffect: {fileID: 0}
 --- !u!58 &6375043133143568531
 CircleCollider2D:
   m_ObjectHideFlags: 0

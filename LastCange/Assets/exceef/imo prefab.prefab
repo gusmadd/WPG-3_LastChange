@@ -473,7 +473,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &4445631590799648174
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -540,8 +540,10 @@ MonoBehaviour:
   separationForce: 3
   damageAmount: 1
   attackCooldown: 1.5
-  damageDelay: 0.5
+  damageDelay: 0.7
   stayTimeToTrigger: 1.2
+  canAttack: 0
+  noDamageInTutorial: 0
 --- !u!114 &31909873407651220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,6 +594,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: -8653719598885068355, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: -7986189361177264997, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -630,7 +636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.020596229
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1020,9 +1026,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1645513773
+  m_SortingLayer: 4
+  m_SortingOrder: 4
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

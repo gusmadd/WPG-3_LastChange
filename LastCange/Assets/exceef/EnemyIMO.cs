@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
+using UnityEngine.SceneManagement; // ⬅️ tambahkan ini di paling atas
 public class EnemyIMO : MonoBehaviour
 {
     [Header("Target")]
@@ -32,6 +32,15 @@ public class EnemyIMO : MonoBehaviour
     private bool facingRight = false;
 
     public static EnemyIMO currentPuller = null;
+    public bool canAttack = false;
+    private bool hasNotifiedTutorial = false;
+    private TutorialManager tutorialManager;
+    private bool canMove = true;
+
+    [Header("Tutorial Mode")]
+    public bool noDamageInTutorial = false;
+
+    private int debugID; // 👀 unik ID buat tracking monster di log
 
     void Start()
     {
@@ -40,21 +49,20 @@ public class EnemyIMO : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         coll = GetComponent<Collider2D>();
 
-        // Collider dijadikan trigger agar tidak nabrak fisik
+        debugID = Random.Range(1000, 9999);
+        Debug.Log($"🧠 EnemyIMO #{debugID} Start() → noDamageInTutorial = {noDamageInTutorial}, canAttack = {canAttack}");
+
         if (coll != null)
             coll.isTrigger = true;
 
-        // Abaikan collision antar Enemy & Player
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         int playerLayer = LayerMask.NameToLayer("Player");
-
         if (enemyLayer >= 0 && playerLayer >= 0)
         {
             Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
             Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
         }
 
-        // Cari player otomatis jika belum diset
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -62,19 +70,15 @@ public class EnemyIMO : MonoBehaviour
                 player = p.transform;
         }
     }
-    void Flip()
-    {
-        facingRight = !facingRight;
-
-        // ambil skala sekarang
-        Vector3 scale = transform.localScale;
-        scale.x *= -1; // balik sumbu X
-        transform.localScale = scale;
-    }
 
     void Update()
     {
         if (player == null) return;
+        if (!canMove)
+        {
+            if (anim != null) anim.SetBool("isMoving", false);
+            return;
+        }
 
         if (playerInside && !isAttacking)
         {
@@ -97,44 +101,21 @@ public class EnemyIMO : MonoBehaviour
 
             if (spriteRenderer != null)
                 spriteRenderer.flipX = direction.x < 0;
-
-            Vector2 separation = GetSeparationForce();
-            Vector2 finalDir = (direction + separation).normalized;
-
-            rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
-            // --- Tambahkan ini di bawah gerakan ---
-            if (finalDir.x > 0.1f && !facingRight)
-            {
-                Flip();
-            }
-            else if (finalDir.x < -0.1f && facingRight)
-            {
-                Flip();
-            }
-
-
-            // 🚫 Cegah tumpukan berat (push out sedikit)
-            Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, separationDistance * 0.8f);
-            foreach (var col in overlaps)
-            {
-                if (col != null && col.CompareTag("Enemy") && col.gameObject != gameObject)
-                {
-                    Vector2 pushDir = (transform.position - col.transform.position).normalized;
-                    rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
-                }
-            }
-            if (anim != null)
-                anim.SetBool("isMoving", true);
-        }
-        else
-        {
-            if (anim != null)
-                anim.SetBool("isMoving", false);
         }
     }
 
     IEnumerator Attack()
     {
+        // 🚫 Jika scene adalah Level 0 → langsung keluar
+        if (SceneManager.GetActiveScene().name == "Level 0")
+        {
+            Debug.Log($"[#{debugID}] ❌ Attack dibatalkan karena sedang di scene tutorial (Level 0).");
+            yield break;
+        }
+
+        if (!canAttack)
+            yield break;
+
         isAttacking = true;
         lastAttackTime = Time.time;
 
@@ -146,14 +127,16 @@ public class EnemyIMO : MonoBehaviour
         if (currentPuller == null && player != null)
         {
             currentPuller = this;
-
-            // damage player
             var playerScript = player.GetComponent<PlayerControler>();
+
+            Debug.Log($"💥 [#{debugID}] Menyerang player di scene {SceneManager.GetActiveScene().name}");
+
             yield return StartCoroutine(PullPlayer());
 
-            playerScript = player.GetComponent<PlayerControler>();
             if (playerScript != null)
+            {
                 playerScript.TakeDamage(damageAmount);
+            }
 
             currentPuller = null;
         }
@@ -163,72 +146,67 @@ public class EnemyIMO : MonoBehaviour
 
     IEnumerator PullPlayer()
     {
+        if (noDamageInTutorial)
+        {
+            Debug.Log($"🌀 [#{debugID}] PullPlayer() dibatalkan (tutorial mode).");
+            yield break;
+        }
+
         float elapsed = 0f;
         Vector2 startPos = player.position;
+        Vector2 targetPos = transform.position + (Vector3)(transform.right * -0.5f);
 
-        while (elapsed < pullDuration && player != null)
+        while (elapsed < pullDuration)
         {
-            Vector2 targetPos = Vector2.Lerp(startPos, transform.position, elapsed / pullDuration);
-            player.position = Vector2.MoveTowards(player.position, targetPos, pullSpeed * Time.deltaTime);
             elapsed += Time.deltaTime;
+            float t = elapsed / pullDuration;
+            player.position = Vector2.Lerp(startPos, targetPos, t);
             yield return null;
         }
     }
 
-    // 🌀 Perhitungan separation pakai overlap (lebih halus)
-    Vector2 GetSeparationForce()
+    void OnTriggerStay2D(Collider2D col)
     {
-        Vector2 force = Vector2.zero;
-        Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, separationDistance);
+        if (!col.CompareTag("Player")) return;
 
-        foreach (Collider2D col in nearby)
+        if (!hasNotifiedTutorial)
         {
-            if (col == null || col.gameObject == gameObject) continue;
-            if (!col.CompareTag("Enemy")) continue;
-
-            Vector2 away = (Vector2)(transform.position - col.transform.position);
-            float dist = away.magnitude;
-            if (dist < 0.01f) continue;
-
-            away.Normalize();
-            force += away * (separationForce / dist);
+            hasNotifiedTutorial = true;
+            var tut = FindObjectOfType<TutorialManager>();
+            if (tut != null)
+            {
+                tut.NotifyMonsterTouchedPlayer(this);
+                Debug.Log($"📩 [#{debugID}] Lapor ke TutorialManager (first contact).");
+            }
         }
 
-        return force;
-    }
-
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-            playerInside = true;
-    }
-
-    void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
+        if (canAttack && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
         {
-            playerInside = false;
-            stayTimer = 0f;
+            // 🚫 Jangan serang kalau masih tutorial mode (noDamageInTutorial true)
+            if (noDamageInTutorial)
+            {
+                Debug.Log($"[#" + GetInstanceID() + "] ❌ Serangan diblokir karena masih tutorial mode.");
+                return;
+            }
+
+            StartCoroutine(Attack());
         }
+
     }
 
-    public void Die()
+    public void SetTutorialManager(TutorialManager t)
     {
-        if (currentPuller == this)
-            currentPuller = null;
-
-        Destroy(gameObject);
-
-        // Panggil spawner baru
-        EnemySpawnerIMO spawner = FindObjectOfType<EnemySpawnerIMO>();
-        if (spawner != null)
-            spawner.EnemyDied();
+        tutorialManager = t;
     }
 
-    // 🧭 Debug radius separation
-    void OnDrawGizmosSelected()
+    public void StopMovement()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, separationDistance);
+        canMove = false;
+        rb.velocity = Vector2.zero;
+    }
+
+    public void ResumeMovement()
+    {
+        canMove = true;
     }
 }
