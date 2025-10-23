@@ -27,6 +27,7 @@ public class PlayerControler : MonoBehaviour
     [Header("Burning")]
     public bool isBurning = false;      // apakah player terbakar
     public bool hasFlame = false;       // apakah player bawa api untuk lilin
+    public GameObject apiMC;
     public float burnDamagePerSecond = 10f;
 
     [Header("UI Pain Bar")]
@@ -55,13 +56,13 @@ public class PlayerControler : MonoBehaviour
     public float attackCooldown = 1f;
     private Animator anim;
     private bool nearFire = false; // apakah player dekat api
-    public ParticleSystem fireEffect;
     // private bool facingRight = true;
     [HideInInspector] public bool canAttack = true; // 🔥 Tambahan
 
     void Start()
     {
         tutorialManager = FindObjectOfType<TutorialManager>();
+        apiMC.SetActive(false);
 
         currentLives = maxLives;
         UpdateHeartUI();
@@ -168,14 +169,13 @@ public class PlayerControler : MonoBehaviour
     }
     void StartBurning()
     {
+        apiMC.SetActive(true);
         if (!isBurning)
         {
             isBurning = true;
             hasFlame = true;
             Debug.Log("Player mulai terbakar (pakai E)!");
             GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
-            if (fireEffect != null && !fireEffect.isPlaying)
-                fireEffect.Play();
         }
 
         if (painBarUI != null)
@@ -196,6 +196,7 @@ public class PlayerControler : MonoBehaviour
 
     public void StopBurning()
     {
+        apiMC.SetActive(false);
         isBurning = false;
         hasFlame = false;
         Debug.Log("Api padam.");
@@ -204,8 +205,6 @@ public class PlayerControler : MonoBehaviour
             GameManager.Instance.StopLoopSFX();
             //GameManager.Instance.PlaySFX(GameManager.Instance.burnEndSFX);
         }
-        if (fireEffect != null && fireEffect.isPlaying)
-            fireEffect.Stop();
         if (painBarUI != null)
             painBarUI.SetActive(false);
     }
