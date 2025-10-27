@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement; // ⬅️ tambahkan ini di paling atas
+using UnityEngine.SceneManagement;
+
 public class EnemyIMO : MonoBehaviour
 {
     [Header("Target")]
@@ -40,10 +41,26 @@ public class EnemyIMO : MonoBehaviour
     [Header("Tutorial Mode")]
     public bool noDamageInTutorial = false;
 
-    private int debugID; // 👀 unik ID buat tracking monster di log
+    private int debugID;
 
     void Start()
     {
+        // ✅ Setup layer collision
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int mapLayer = LayerMask.NameToLayer("Map");
+
+        if (enemyLayer >= 0)
+        {
+            // ❌ Abaikan antar musuh & player
+            Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
+            Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
+
+            // ✅ Tapi JANGAN abaikan map (biar nabrak)
+            Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
+        }
+
+        // ✅ Komponen dasar
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -55,14 +72,7 @@ public class EnemyIMO : MonoBehaviour
         if (coll != null)
             coll.isTrigger = true;
 
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
-        int playerLayer = LayerMask.NameToLayer("Player");
-        if (enemyLayer >= 0 && playerLayer >= 0)
-        {
-            Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
-            Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
-        }
-
+        // ✅ Cari player otomatis
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -106,7 +116,6 @@ public class EnemyIMO : MonoBehaviour
 
     IEnumerator Attack()
     {
-        // 🚫 Jika scene adalah Level 0 → langsung keluar
         if (SceneManager.GetActiveScene().name == "Level 0")
         {
             Debug.Log($"[#{debugID}] ❌ Attack dibatalkan karena sedang di scene tutorial (Level 0).");
@@ -182,16 +191,14 @@ public class EnemyIMO : MonoBehaviour
 
         if (canAttack && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
         {
-            // 🚫 Jangan serang kalau masih tutorial mode (noDamageInTutorial true)
             if (noDamageInTutorial)
             {
-                Debug.Log($"[#" + GetInstanceID() + "] ❌ Serangan diblokir karena masih tutorial mode.");
+                Debug.Log($"[#{debugID}] ❌ Serangan diblokir karena masih tutorial mode.");
                 return;
             }
 
             StartCoroutine(Attack());
         }
-
     }
 
     public void SetTutorialManager(TutorialManager t)

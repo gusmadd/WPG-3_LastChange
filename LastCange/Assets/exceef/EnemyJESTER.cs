@@ -32,26 +32,30 @@ public class EnemyJESTER : MonoBehaviour
     public static EnemyJESTER currentAttacker = null;
 
     void Start()
+{
+    int enemyLayer = LayerMask.NameToLayer("Enemy"); // pastikan layer musuh pakai nama yang dipakai di Unity
+    int playerLayer = LayerMask.NameToLayer("Player");
+    int mapLayer = LayerMask.NameToLayer("Map");
+
+    // ❌ Abaikan antar musuh & player
+    Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
+    Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
+
+    // ✅ Tapi JANGAN abaikan map (biar nabrak)
+    Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
+
+    // Inisialisasi komponen
+    rb = GetComponent<Rigidbody2D>();
+    anim = GetComponent<Animator>();
+    spriteRenderer = GetComponent<SpriteRenderer>();
+
+    if (player == null)
     {
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (player == null)
-        {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) player = p.transform;
-        }
-
-        // Abaikan tabrakan antar musuh dan dengan player
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
-        int playerLayer = LayerMask.NameToLayer("Player");
-        if (enemyLayer >= 0 && playerLayer >= 0)
-        {
-            Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
-            Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
-        }
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null) player = p.transform;
     }
+}
+
     void Flip()
     {
         facingRight = !facingRight;
@@ -93,16 +97,6 @@ public class EnemyJESTER : MonoBehaviour
                 Flip();
             }
 
-            // 🚫 Cegah tumpukan berat antar Jester
-            Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, separationDistance * 0.8f);
-            foreach (var col in overlaps)
-            {
-                if (col != null && col.CompareTag("Enemy") && col.gameObject != gameObject)
-                {
-                    Vector2 pushDir = (transform.position - col.transform.position).normalized;
-                    rb.MovePosition(rb.position + pushDir * 0.02f); // dorong dikit biar misah
-                }
-            }
             if (anim != null)
                 anim.SetBool("isMoving", true);
         }
