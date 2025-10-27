@@ -1,13 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1107 &-7960332323502570842
-AnimatorStateMachine:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
+--- !u!91 &9100000
+AnimatorController:
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<<< Updated upstream:LastCange/Assets/Fathoni/sprite/opossum/opossum1.controller
   m_Name: opossum1
   serializedVersion: 5
   m_AnimatorParameters: []
@@ -25,35 +23,13 @@ AnimatorStateMachine:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
 --- !u!1102 &4143335693474952269
-========
-  m_Name: Base Layer
-  m_ChildStates:
-  - serializedVersion: 1
-    m_State: {fileID: -1797862533955175131}
-    m_Position: {x: 200, y: 0, z: 0}
-  m_ChildStateMachines: []
-  m_AnyStateTransitions: []
-  m_EntryTransitions: []
-  m_StateMachineTransitions: {}
-  m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 50, y: 20, z: 0}
-  m_EntryPosition: {x: 50, y: 120, z: 0}
-  m_ExitPosition: {x: 800, y: 120, z: 0}
-  m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: -1797862533955175131}
---- !u!1102 &-1797862533955175131
->>>>>>>> Stashed changes:LastCange/Assets/Fathoni/sprite/opossum1 1.controller
 AnimatorState:
   serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<<< Updated upstream:LastCange/Assets/Fathoni/sprite/opossum/opossum1.controller
   m_Name: op_walk
-========
-  m_Name: possumtes
->>>>>>>> Stashed changes:LastCange/Assets/Fathoni/sprite/opossum1 1.controller
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -66,17 +42,12 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-<<<<<<<< Updated upstream:LastCange/Assets/Fathoni/sprite/opossum/opossum1.controller
   m_Motion: {fileID: 7400000, guid: 7ac49d06cd7c0cb489904a730707b042, type: 2}
-========
-  m_Motion: {fileID: 7400000, guid: 28232ad6aa3f9cf48b21566be1570672, type: 2}
->>>>>>>> Stashed changes:LastCange/Assets/Fathoni/sprite/opossum1 1.controller
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
-<<<<<<<< Updated upstream:LastCange/Assets/Fathoni/sprite/opossum/opossum1.controller
 --- !u!1107 &5099569653478175720
 AnimatorStateMachine:
   serializedVersion: 6
@@ -99,27 +70,3 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 4143335693474952269}
-========
---- !u!91 &9100000
-AnimatorController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: opossum1 1
-  serializedVersion: 5
-  m_AnimatorParameters: []
-  m_AnimatorLayers:
-  - serializedVersion: 5
-    m_Name: Base Layer
-    m_StateMachine: {fileID: -7960332323502570842}
-    m_Mask: {fileID: 0}
-    m_Motions: []
-    m_Behaviours: []
-    m_BlendingMode: 0
-    m_SyncedLayerIndex: -1
-    m_DefaultWeight: 0
-    m_IKPass: 0
-    m_SyncedLayerAffectsTiming: 0
-    m_Controller: {fileID: 9100000}
->>>>>>>> Stashed changes:LastCange/Assets/Fathoni/sprite/opossum1 1.controller
