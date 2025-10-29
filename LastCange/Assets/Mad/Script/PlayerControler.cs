@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerControler : MonoBehaviour
 {
+    private TutorialManager tutorialManager;
+    private bool nearFireTutorialShown = false;
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
@@ -22,6 +27,7 @@ public class PlayerControler : MonoBehaviour
     [Header("Burning")]
     public bool isBurning = false;      // apakah player terbakar
     public bool hasFlame = false;       // apakah player bawa api untuk lilin
+    public GameObject apiMC;
     public float burnDamagePerSecond = 10f;
 
     [Header("UI Pain Bar")]
@@ -39,22 +45,25 @@ public class PlayerControler : MonoBehaviour
     public Sprite heart2;
     public Sprite heart1;
     public Sprite heart0; // kosong
+    [Header("Control Lock")]
+    public bool canMove = true;
 
     [Header("Attack")]
     public float attackRange = 1f;      // radius serangan dekat
     public int attackDamage = 1;        // damage ke monster
     public LayerMask monsterLayer;      // layer untuk monster
-
-    [Header("Visual Effect")]
-    public SpriteRenderer spriteRenderer;  // drag sprite player di inspector
-    public Color attackColor = new Color(1f, 0.3f, 0.3f, 1f); // merah muda
-    private Color originalColor;
-    public float attackFlashDuration = 0.2f; // durasi efek merah
-
+    private float lastAttackTime;
+    public float attackCooldown = 1f;
     private Animator anim;
     private bool nearFire = false; // apakah player dekat api
+    // private bool facingRight = true;
+    [HideInInspector] public bool canAttack = true; // 🔥 Tambahan
+
     void Start()
     {
+        tutorialManager = FindObjectOfType<TutorialManager>();
+        apiMC.SetActive(false);
+
         currentLives = maxLives;
         UpdateHeartUI();
 
@@ -66,17 +75,43 @@ public class PlayerControler : MonoBehaviour
 
         if (painBarUI != null)
             painBarUI.SetActive(false);
-
-        if (spriteRenderer != null)
-            originalColor = spriteRenderer.color;
     }
+    //void Flip()
+    // {
+    //     facingRight = !facingRight;
+
+    // ambil skala sekarang
+    //      Vector3 scale = transform.localScale;
+    //     scale.x *= -1; // balik sumbu X
+    //     transform.localScale = scale;
+    //  }
 
     void Update()
     {
+        if (!canMove)
+        {
+            // hentikan semua input
+            moveInput = Vector2.zero;
+            anim.SetBool("isWalking", false);
+            return;
+        }
         // Input
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
+        // 🔄 Balik arah seluruh animasi
+
+        // if (moveInput.x > 0.1f && !facingRight)
+        // {
+        //     Flip();
+        // }
+        //  else if (moveInput.x < -0.1f && facingRight)
+        //  {
+        //      Flip();
+        //  }
+
+        // Update animasi jalan
+        anim.SetBool("isWalking", moveInput.magnitude > 0.1f);
 
         // Kalau player terbakar
         if (nearFire && Input.GetKeyDown(KeyCode.E))
@@ -91,35 +126,33 @@ public class PlayerControler : MonoBehaviour
         }
         else
         {
-            // Kalau tidak terbakar → isi lagi pelan²
+            // Regen pelan²
             if (currentPain < maxPain)
             {
-                currentPain += regenSpeed * Time.deltaTime; // regen pelan²
+                currentPain += regenSpeed * Time.deltaTime;
                 if (currentPain > maxPain)
                     currentPain = maxPain;
 
-                // Pastikan bar tetap kelihatan selama belum penuh
                 if (painBarUI != null)
                     painBarUI.SetActive(true);
             }
             else
             {
-                // Kalau sudah penuh → bar hilang
                 if (painBarUI != null)
                     painBarUI.SetActive(false);
             }
         }
 
-        // Update animator parameter
-        anim.SetBool("isBurning", isBurning);
-
-        // Update UI selalu ngikut stats
+        // Update UI
         UpdatePainBar();
+
+        // Attack
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Attack();
         }
     }
+
 
     void FixedUpdate()
     {
@@ -136,11 +169,13 @@ public class PlayerControler : MonoBehaviour
     }
     void StartBurning()
     {
+        apiMC.SetActive(true);
         if (!isBurning)
         {
             isBurning = true;
             hasFlame = true;
             Debug.Log("Player mulai terbakar (pakai E)!");
+            GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
         }
 
         if (painBarUI != null)
@@ -161,9 +196,15 @@ public class PlayerControler : MonoBehaviour
 
     public void StopBurning()
     {
+        apiMC.SetActive(false);
         isBurning = false;
         hasFlame = false;
         Debug.Log("Api padam.");
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StopLoopSFX();
+            //GameManager.Instance.PlaySFX(GameManager.Instance.burnEndSFX);
+        }
         if (painBarUI != null)
             painBarUI.SetActive(false);
     }
@@ -225,25 +266,48 @@ public class PlayerControler : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)  //deteksi sumber api
+    private void OnTriggerEnter2D(Collider2D other)  // deteksi sumber api
     {
         if (other.CompareTag("FireSource"))
         {
             nearFire = true;
             Debug.Log("Dekat api. Tekan E untuk terbakar.");
+
+            // === Tambahan untuk tutorial ===
+            if (tutorialManager != null)
+            {
+                tutorialManager.SetPlayerNearFire(true);
+            }
         }
     }
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("FireSource"))
         {
             nearFire = false;
-            Debug.Log("Menjauh dari api.");
+
+            // === Tambahan untuk tutorial ===
+            if (tutorialManager != null)
+            {
+                tutorialManager.SetPlayerNearFire(false);
+            }
         }
     }
+
     void Attack()
     {
+        if (!canAttack) return; // 🚫 kalau sedang dikunci tutorial
+        if (Time.time < lastAttackTime + attackCooldown)
+            return; // ⛔ masih cooldown
+
+        lastAttackTime = Time.time; // simpan waktu terakhir serang
+        anim.SetTrigger("Attack");
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlaySFX(GameManager.Instance.attackSFX);
+
         // cari monster dalam radius
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
 
@@ -253,20 +317,11 @@ public class PlayerControler : MonoBehaviour
             if (monster != null)
             {
                 monster.TakeDamage(attackDamage);
+                Debug.Log("💥 Monster kena serangan!");
             }
         }
 
         Debug.Log("Player menyerang!");
-        StartCoroutine(AttackFlash()); // efek merah
-    }
-    IEnumerator AttackFlash()
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = attackColor;
-            yield return new WaitForSeconds(attackFlashDuration);
-            spriteRenderer.color = originalColor;
-        }
     }
     // buat visual debug di editor
     void OnDrawGizmosSelected()
@@ -276,6 +331,25 @@ public class PlayerControler : MonoBehaviour
     }
     public void TakeDamage(int damage)
     {
+        if (SceneManager.GetActiveScene().name == "Level 0")
+        {
+            Debug.Log("⚠️ [Tutorial] Player tidak menerima damage di scene Level 0.");
+            return;
+        }
+        var tutorialEnemy = FindObjectOfType<EnemyIMO>();
+        if (tutorialEnemy != null && tutorialEnemy.noDamageInTutorial)
+        {
+            Debug.Log("⚠️ [Tutorial] Player tidak menerima damage (diblokir oleh PlayerControler).");
+            return;
+        }
+        // 🔒 Hard block: jika ada EnemyIMO di scene dan sedang mode tutorial, abaikan damage
+        EnemyIMO enemy = FindObjectOfType<EnemyIMO>();
+        if (enemy != null && enemy.noDamageInTutorial)
+        {
+            Debug.Log("⚠️ [Tutorial] Player tidak menerima damage karena mode tutorial aktif.");
+            return;
+        }
+
         // Kurangi nyawa player
         currentLives -= damage;
 
@@ -297,4 +371,16 @@ public class PlayerControler : MonoBehaviour
                 transform.position = Vector3.zero; // fallback
         }
     }
+
+    public void LockMovement()
+    {
+        canMove = false;
+        rb.velocity = Vector2.zero;
+    }
+
+    public void UnlockMovement()
+    {
+        canMove = true;
+    }
+
 }
