@@ -5,6 +5,7 @@ public class EnemySeparation : MonoBehaviour
     public float separationRadius = 1.2f;
     public float separationStrength = 2f;
     public string enemyTag = "Enemy";
+    public LayerMask obstacleMask; // 🎯 Tambahin ini di Inspector, centang layer "Map"
 
     private Rigidbody2D rb;
 
@@ -36,7 +37,21 @@ public class EnemySeparation : MonoBehaviour
         if (count > 0)
         {
             totalForce /= count;
-            rb.MovePosition(rb.position + totalForce * separationStrength * Time.fixedDeltaTime);
+            Vector2 moveDir = totalForce.normalized;
+            float moveDist = totalForce.magnitude * separationStrength * Time.fixedDeltaTime;
+
+            // 🚧 Cek dulu apakah ada obstacle di depan
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDir, moveDist + 0.1f, obstacleMask);
+            if (hit.collider == null)
+            {
+                // ✅ Aman, baru gerak
+                rb.MovePosition(rb.position + moveDir * moveDist);
+            }
+            else
+            {
+                // 🚫 Ada obstacle, stop biar gak nembus
+                // (optional) bisa tambahin dorongan kecil ke arah samping
+            }
         }
     }
 

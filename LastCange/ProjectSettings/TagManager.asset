@@ -9,6 +9,7 @@ TagManager:
   - monster
   - Enemy
   - Portal
+  - Obstacle
   layers:
   - Default
   - TransparentFX
