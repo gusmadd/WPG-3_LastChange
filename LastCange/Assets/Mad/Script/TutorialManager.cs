@@ -31,7 +31,8 @@ public class TutorialManager : MonoBehaviour
     private Vector3 lastPosition;
     private GameObject currentMonster;
     private EnemyIMO currentMonsterScript;
-
+    private float moveCheckDelay = 1f; // waktu tunggu 1 detik
+    private float moveTimer = 0f;
     private void Start()
     {
         playerCtrl = player.GetComponent<PlayerControler>();
@@ -42,43 +43,50 @@ public class TutorialManager : MonoBehaviour
     IEnumerator TutorialSequence()
     {
         // === 1. Intro ===
-        yield return ShowMessage("Sugeng Rawuh dumeteng panjenengan ten mriki, Kadunyan neraaka kang katah genine.");
-        yield return ShowMessage("Panjenengan saget ngagem tombol W, A, S, D, kagem nggerakaken awakmu.");
+        yield return ShowMessage("Don't ask how you ended up being... this.. whatever thing you are right now, or who am I. ");
+        yield return ShowMessage("The story is quite long--or perhaps the developer team either dont have time to add the backstory or just... being lazy *cough*");
+        yield return ShowMessage("anyway, Let's just cut to the chase shall we?");
         yield return new WaitUntil(() => PlayerMoved());
+        yield return ShowMessage("You seems like already know how to walk around, or if not yet, try to use WASD on your keyboard");
+        yield return ShowMessage("Good. ");
+        yield return ShowMessage("Now if you think of a hell, what comes first in your mind?. ");
+        yield return ShowMessage("Scary, boring, ugly, you name it. ");
+        yield return ShowMessage("Is there a way out of here?. ");
+        yield return ShowMessage("Perhaps yes, or not.. not really. ");
 
         // === 2. Lilin dan api ===
-        yield return ShowMessage("Di tempat ritual ini terdapat beberapa lilin, dan kamu harus menyalakan lilin tersebut.");
+        yield return ShowMessage("There might be. Take a look at the Ritual Circle in the middle of the map. ");
         foreach (var lilin in lilins)
             lilin.SetActive(true);
 
-        yield return ShowMessage("Di sekeliling tempat ini ada sumber api. Kamu harus mencarinya dan membakar dirimu untuk menyalakan lilin tersebut.");
+        yield return ShowMessage("See those candles? you must lit them all to activate the Ritual Circle, you can find the firepit on either side of the map and bring the fire to lit them.");
+        yield return ShowMessage("That is your Main Objective here. Don't ask why. ");
         fireSource.SetActive(true);
         yield return new WaitUntil(() => playerNearFire);
-        yield return ShowMessage("Ketika kamu terbakar, akan muncul pain tolerance. Itu adalah waktumu ketika terbakar, jadi jangan kelamaan.");
-        yield return ShowMessage("Tekan [E] untuk membakar diri.");
+        yield return ShowMessage(" You can't stay on fire for too long though. It will hurt you. So be careful.");
+        yield return ShowMessage("Press [E] to burn yourself.");
         fireTutorialShown = true;
 
         // === 3. Tunggu lilin menyala ===
         yield return new WaitUntil(() => AnyCandleLit());
 
         // === 4. Munculkan monster ===
-        yield return ShowMessage("Ada sesuatu muncul...");
+        yield return ShowMessage("And, it's not really a hell if there's no those nasty looking demons.I.. meant it in the worse way. Unless if you're into them. Im not judging, eh.");
         if (playerCtrl) playerCtrl.enabled = false; // kunci player
         SpawnMonster();
 
         // tunggu monster menyentuh player
         yield return new WaitUntil(() => monsterTouchingPlayer);
-        yield return ShowMessage("Kamu harus bisa menghindari serangan dari monster tersebut.");
+        yield return ShowMessage("Try to get away from them. You can keep run and run away from them, but you can’t keep on running away forever, right?");
 
         // === 5. Kontak pertama dengan monster ===
         yield return HandleMonsterFirstContact();
 
         // === 6. Tunggu player berhasil dodge ===
         yield return new WaitUntil(() => PlayerFarFromMonster());
-        yield return ShowMessage("Bagus! Kamu berhasil menghindar dari serangan monster.");
 
         // === 7. serangan balik
-        yield return ShowMessage("Sekarang kamu bisa menyerang monster tersebut sampai ia mati. gunakan tombo; spasi untuk menyerang");
+        yield return ShowMessage("Though, sometimes it's necessary to make your way through them using that sword attached to your limb [Press Space bar to attack].");
         yield return new WaitForSeconds(0.3f);
         // aktifkan player & monster untuk pertempuran
         if (playerCtrl)
@@ -99,12 +107,13 @@ public class TutorialManager : MonoBehaviour
 
         // === 8. Tunggu sampai monster mati ===
         yield return new WaitUntil(() => currentMonster == null || currentMonsterScript == null);
-        yield return ShowMessage("Bagus! Kamu berhasil mengalahkan monster tersebut.");
+        yield return ShowMessage("Good, you've punish the monster.");
 
         // === 9. Akhiri tutorial (bisa lanjut ke scene berikut, misal) ===
-        yield return ShowMessage("Kamu bisa menyalakan semua lilinya");
+        yield return ShowMessage("Now you can lit all the candles.");
         yield return new WaitUntil(() => AllCandlesLit());
-        yield return ShowMessage("✨ Semua lilin telah menyala! Portal telah terbuka."); yield return ShowMessage("Masuklah ke portal untuk lanjut ke level selanjutnya.");
+        yield return ShowMessage("wow, looks something's happening..."); 
+        yield return ShowMessage("enter the portal to escape this place.");
     }
 
     // ================== UTILITY ==================
@@ -133,11 +142,18 @@ public class TutorialManager : MonoBehaviour
     }
 
     private bool PlayerMoved()
+{
+    // tunggu dulu 1 detik sebelum mulai deteksi pergerakan
+    if (moveTimer < moveCheckDelay)
     {
-        float distanceMoved = Vector3.Distance(player.transform.position, lastPosition);
-        lastPosition = player.transform.position;
-        return distanceMoved > 0.05f;
+        moveTimer += Time.deltaTime;
+        return false;
     }
+
+    float distanceMoved = Vector3.Distance(player.transform.position, lastPosition);
+    lastPosition = player.transform.position;
+    return distanceMoved > 0.05f;
+}
 
     private bool AnyCandleLit()
     {

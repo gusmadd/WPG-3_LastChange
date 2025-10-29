@@ -31,80 +31,76 @@ public class EnemyJESTER : MonoBehaviour
     private bool facingRight = false;
     public static EnemyJESTER currentAttacker = null;
 
+    public LayerMask obstacleMask; // 🎯 tambahin ini di inspector, set ke layer Map
+
     void Start()
-{
-    int enemyLayer = LayerMask.NameToLayer("Enemy"); // pastikan layer musuh pakai nama yang dipakai di Unity
-    int playerLayer = LayerMask.NameToLayer("Player");
-    int mapLayer = LayerMask.NameToLayer("Map");
-
-    // ❌ Abaikan antar musuh & player
-    Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
-    Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
-
-    // ✅ Tapi JANGAN abaikan map (biar nabrak)
-    Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
-
-    // Inisialisasi komponen
-    rb = GetComponent<Rigidbody2D>();
-    anim = GetComponent<Animator>();
-    spriteRenderer = GetComponent<SpriteRenderer>();
-
-    if (player == null)
     {
-        GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (p != null) player = p.transform;
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
+        }
+
+        int enemyLayer = LayerMask.NameToLayer("Monster");
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int mapLayer = LayerMask.NameToLayer("Map");
+
+        Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
+        Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
+        Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
     }
-}
 
     void Flip()
     {
         facingRight = !facingRight;
-
-        // ambil skala sekarang
         Vector3 scale = transform.localScale;
-        scale.x *= -1; // balik sumbu X
+        scale.x *= -1;
         transform.localScale = scale;
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (player == null || isAttacking) return;
 
-        if (playerInside && !isAttacking)
+        Vector2 direction = (player.position - transform.position).normalized;
+        Vector2 separation = GetSeparationForce();
+        Vector2 finalDir = (direction + separation).normalized;
+
+        // 🚧 Cek apakah ada obstacle di depan
+        float checkDist = 0.6f;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, finalDir, checkDist, obstacleMask);
+
+        if (hit.collider == null)
+        {
+            // ✅ aman, bisa jalan
+            rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
+            if (anim != null) anim.SetBool("isMoving", true);
+        }
+        else
+        {
+            // 🚫 ketabrak obstacle, stop
+            if (anim != null) anim.SetBool("isMoving", false);
+        }
+
+        // Flip arah
+        if (finalDir.x > 0.1f && !facingRight) Flip();
+        else if (finalDir.x < -0.1f && facingRight) Flip();
+
+        // Cek attack
+        if (playerInside && Time.time >= lastAttackTime + attackCooldown)
         {
             stayTimer += Time.deltaTime;
-            if (stayTimer >= stayTimeToTrigger && Time.time >= lastAttackTime + attackCooldown)
+            if (stayTimer >= stayTimeToTrigger)
             {
                 StartCoroutine(Attack());
                 stayTimer = 0f;
             }
         }
         else stayTimer = 0f;
-
-        if (!isAttacking)
-        {
-            Vector2 direction = (player.position - transform.position).normalized;
-            Vector2 separation = GetSeparationForce();
-            Vector2 finalDir = (direction + separation).normalized;
-
-            rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
-            if (finalDir.x > 0.1f && !facingRight)
-            {
-                Flip();
-            }
-            else if (finalDir.x < -0.1f && facingRight)
-            {
-                Flip();
-            }
-
-            if (anim != null)
-                anim.SetBool("isMoving", true);
-        }
-        else
-        {
-            if (anim != null)
-                anim.SetBool("isMoving", false);
-        }
     }
 
     IEnumerator Attack()
@@ -146,7 +142,6 @@ public class EnemyJESTER : MonoBehaviour
         }
     }
 
-    // 🔧 versi baru: separation pakai physics overlap
     Vector2 GetSeparationForce()
     {
         Vector2 force = Vector2.zero;
@@ -192,5 +187,11 @@ public class EnemyJESTER : MonoBehaviour
         EnemySpawnerJESTER spawner = FindObjectOfType<EnemySpawnerJESTER>();
         if (spawner != null)
             spawner.EnemyDied();
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, separationDistance);
     }
 }
