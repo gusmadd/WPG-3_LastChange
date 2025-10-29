@@ -7,6 +7,9 @@ TagManager:
   - FireSource
   - Map
   - monster
+  - Enemy
+  - Portal
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -14,12 +17,12 @@ TagManager:
   - 
   - Water
   - UI
+  - Map
   - 
-  - 
-  - 
-  - 
-  - UI World
   - Monster
+  - Environment
+  - UI World
+  - Player
   - 
   - 
   - 
