@@ -30,10 +30,15 @@ public class EnemyJESTER : MonoBehaviour
     public static EnemyJESTER currentAttacker = null;
     public LayerMask obstacleMask;
 
+    private bool facingRight = true; // buat auto flip
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
+        // 🔒 Biar ga muter muter 360°
+        rb.freezeRotation = true;
 
         if (player == null)
         {
@@ -71,6 +76,15 @@ public class EnemyJESTER : MonoBehaviour
             if (anim != null) anim.SetBool("isMoving", false);
         }
 
+        // 🔁 Auto flip arah berdasarkan posisi player
+        if (player != null)
+        {
+            if (player.position.x > transform.position.x && !facingRight)
+                Flip();
+            else if (player.position.x < transform.position.x && facingRight)
+                Flip();
+        }
+
         if (playerInside && Time.time >= lastAttackTime + attackCooldown)
         {
             stayTimer += Time.deltaTime;
@@ -81,6 +95,14 @@ public class EnemyJESTER : MonoBehaviour
             }
         }
         else stayTimer = 0f;
+    }
+
+    void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     IEnumerator Attack()
@@ -175,3 +197,4 @@ public class EnemyJESTER : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, separationDistance);
     }
 }
+    
