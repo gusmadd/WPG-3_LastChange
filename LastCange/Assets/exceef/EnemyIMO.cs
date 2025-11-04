@@ -46,7 +46,7 @@ public class EnemyIMO : MonoBehaviour
     void Start()
     {
         // ✅ Setup layer collision
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        int enemyLayer = LayerMask.NameToLayer("Monster");
         int playerLayer = LayerMask.NameToLayer("Player");
         int mapLayer = LayerMask.NameToLayer("Map");
 
@@ -68,9 +68,6 @@ public class EnemyIMO : MonoBehaviour
 
         debugID = Random.Range(1000, 9999);
         Debug.Log($"🧠 EnemyIMO #{debugID} Start() → noDamageInTutorial = {noDamageInTutorial}, canAttack = {canAttack}");
-
-        if (coll != null)
-            coll.isTrigger = true;
 
         // ✅ Cari player otomatis
         if (player == null)
