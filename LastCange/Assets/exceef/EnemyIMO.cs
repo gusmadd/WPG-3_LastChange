@@ -41,26 +41,26 @@ public class EnemyIMO : MonoBehaviour
     [Header("Tutorial Mode")]
     public bool noDamageInTutorial = false;
 
+    [Header("Attack Effect Sprite")]
+    public Sprite[] attackEffectSprites; // 🌀 isi 19+ sprite seperti spawn
+    public float effectFrameRate = 0.03f;
+    public Vector3 effectOffset = new Vector3(0f, 0.3f, 0f);
+
     private int debugID;
 
     void Start()
     {
-        // ✅ Setup layer collision
         int enemyLayer = LayerMask.NameToLayer("Monster");
         int playerLayer = LayerMask.NameToLayer("Player");
         int mapLayer = LayerMask.NameToLayer("Map");
 
         if (enemyLayer >= 0)
         {
-            // ❌ Abaikan antar musuh & player
             Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
             Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
-
-            // ✅ Tapi JANGAN abaikan map (biar nabrak)
             Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
         }
 
-        // ✅ Komponen dasar
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -69,7 +69,6 @@ public class EnemyIMO : MonoBehaviour
         debugID = Random.Range(1000, 9999);
         Debug.Log($"🧠 EnemyIMO #{debugID} Start() → noDamageInTutorial = {noDamageInTutorial}, canAttack = {canAttack}");
 
-        // ✅ Cari player otomatis
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -125,6 +124,10 @@ public class EnemyIMO : MonoBehaviour
         if (anim != null)
             anim.SetTrigger("Attack");
 
+        // 🌀 Spawn efek sprite animasi di depan musuh
+        if (attackEffectSprites != null && attackEffectSprites.Length > 0)
+            StartCoroutine(PlayAttackEffect());
+
         yield return new WaitForSeconds(damageDelay);
 
         if (currentPuller == null && player != null)
@@ -137,14 +140,33 @@ public class EnemyIMO : MonoBehaviour
             yield return StartCoroutine(PullPlayer());
 
             if (playerScript != null)
-            {
                 playerScript.TakeDamage(damageAmount);
-            }
 
             currentPuller = null;
         }
 
         isAttacking = false;
+    }
+
+    IEnumerator PlayAttackEffect()
+    {
+        GameObject effectObj = new GameObject("AttackEffect");
+        effectObj.transform.position = transform.position + effectOffset;
+        SpriteRenderer sr = effectObj.AddComponent<SpriteRenderer>();
+        sr.sortingOrder = spriteRenderer.sortingOrder + 1;
+
+        float timer = 0f;
+        int frame = 0;
+
+        while (frame < attackEffectSprites.Length)
+        {
+            sr.sprite = attackEffectSprites[frame];
+            frame++;
+            timer += effectFrameRate;
+            yield return new WaitForSeconds(effectFrameRate);
+        }
+
+        Destroy(effectObj);
     }
 
     IEnumerator PullPlayer()
