@@ -1475,7 +1475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c26e2983068484096dd64baaa5fa05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 192958854}
   smoothSpeed: 5
 --- !u!1 &1055444237
 GameObject:
@@ -3229,7 +3229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 4636310879666546206, guid: 0419c5c34b0bc8948ae402d110ae25d3, type: 3}
-  player: {fileID: 0}
+  player: {fileID: 192958854}
   spawnInterval: 5
   spawnRadius: 6
   maxEnemies: 3
