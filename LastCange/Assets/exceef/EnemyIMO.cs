@@ -108,9 +108,6 @@ public class EnemyIMO : MonoBehaviour
         {
             Vector2 direction = (player.position - transform.position).normalized;
             rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
-
-            if (spriteRenderer != null)
-                spriteRenderer.flipX = direction.x < 0;
         }
     }
 

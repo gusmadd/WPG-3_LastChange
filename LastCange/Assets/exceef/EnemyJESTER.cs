@@ -27,17 +27,13 @@ public class EnemyJESTER : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
-    private SpriteRenderer spriteRenderer;
-    private bool facingRight = false;
     public static EnemyJESTER currentAttacker = null;
-
-    public LayerMask obstacleMask; // 🎯 tambahin ini di inspector, set ke layer Map
+    public LayerMask obstacleMask;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (player == null)
         {
@@ -54,14 +50,6 @@ public class EnemyJESTER : MonoBehaviour
         Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
     }
 
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
-    }
-
     void Update()
     {
         if (player == null || isAttacking) return;
@@ -70,27 +58,19 @@ public class EnemyJESTER : MonoBehaviour
         Vector2 separation = GetSeparationForce();
         Vector2 finalDir = (direction + separation).normalized;
 
-        // 🚧 Cek apakah ada obstacle di depan
         float checkDist = 0.6f;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, finalDir, checkDist, obstacleMask);
 
         if (hit.collider == null)
         {
-            // ✅ aman, bisa jalan
             rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
             if (anim != null) anim.SetBool("isMoving", true);
         }
         else
         {
-            // 🚫 ketabrak obstacle, stop
             if (anim != null) anim.SetBool("isMoving", false);
         }
 
-        // Flip arah
-        if (finalDir.x > 0.1f && !facingRight) Flip();
-        else if (finalDir.x < -0.1f && facingRight) Flip();
-
-        // Cek attack
         if (playerInside && Time.time >= lastAttackTime + attackCooldown)
         {
             stayTimer += Time.deltaTime;

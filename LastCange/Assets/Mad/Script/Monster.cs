@@ -9,13 +9,48 @@ public class Monster : MonoBehaviour
     private int currentHP;
 
     [Header("Death")]
-    public GameObject deathEffect; // opsional: drag particle efek mati
+    public GameObject deathEffect;
     private Animator anim;
+
+    [Header("Facing")]
+    public Transform player;
+    private bool facingRight = true;
 
     void Start()
     {
         currentHP = maxHP;
         anim = GetComponent<Animator>();
+
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null)
+                player = p.transform;
+        }
+    }
+
+    void Update()
+    {
+        HandleFacing();
+    }
+
+    void HandleFacing()
+    {
+        if (player == null) return;
+
+        float direction = player.position.x - transform.position.x;
+        if (direction > 0 && facingRight)
+            Flip();
+        else if (direction < 0 && !facingRight)
+            Flip();
+    }
+
+    void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     public void TakeDamage(int damage)
@@ -27,9 +62,7 @@ public class Monster : MonoBehaviour
             anim.SetTrigger("Hit");
 
         if (currentHP <= 0)
-        {
             Die();
-        }
     }
 
     void Die()
@@ -41,7 +74,6 @@ public class Monster : MonoBehaviour
         if (deathEffect != null)
             Instantiate(deathEffect, transform.position, Quaternion.identity);
 
-        // beri delay dikit kalau mau animasi dulu
         Destroy(gameObject, 0.3f);
     }
 }
