@@ -159,8 +159,8 @@ MonoBehaviour:
   bgmSource: {fileID: 43941626}
   sfxSource: {fileID: 43941625}
   mainMenuBGM: {fileID: 8300000, guid: 36554b1bfc4da2449928a99c5a805b04, type: 3}
-  level1BGM: {fileID: 8300000, guid: fb0a41e787365d542b15f9ca7b8f07ce, type: 3}
-  level0BGM: {fileID: 8300000, guid: fb0a41e787365d542b15f9ca7b8f07ce, type: 3}
+  level1BGM: {fileID: 8300000, guid: 40a9d231c8d3d4144b8898dc258bfcf9, type: 3}
+  level0BGM: {fileID: 8300000, guid: 40a9d231c8d3d4144b8898dc258bfcf9, type: 3}
   buttonClickSFX: {fileID: 8300000, guid: 92f97926ef7c005419c8c3426d630145, type: 3}
   lilinNyalaSFX: {fileID: 8300000, guid: 816626ed26f365f4ebb8d503f47287ab, type: 3}
   burnStartSFX: {fileID: 8300000, guid: 50c7b0d64c507f04f82beee0c6b229dd, type: 3}
@@ -300,7 +300,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 1
   Mute: 0

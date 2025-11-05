@@ -54,21 +54,22 @@ public class PlayerControler : MonoBehaviour
     public LayerMask monsterLayer;      // layer untuk monster
     private float lastAttackTime;
     public float attackCooldown = 1f;
-    private Animator anim;
+    [SerializeField] private Animator anim;
     private bool nearFire = false; // apakah player dekat api
-    // private bool facingRight = true;
+    private bool facingRight = true;
     [HideInInspector] public bool canAttack = true; // 🔥 Tambahan
 
     void Start()
     {
         tutorialManager = FindObjectOfType<TutorialManager>();
         apiMC.SetActive(false);
+        Debug.Log($"api mc: {apiMC.activeSelf}");
 
         currentLives = maxLives;
         UpdateHeartUI();
 
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        // anim = GetComponent<Animator>();
 
         currentHP = maxHP;
         currentPain = maxPain;
@@ -76,18 +77,19 @@ public class PlayerControler : MonoBehaviour
         if (painBarUI != null)
             painBarUI.SetActive(false);
     }
-    //void Flip()
-    // {
-    //     facingRight = !facingRight;
+    void Flip()
+    {
+         facingRight = !facingRight;
 
-    // ambil skala sekarang
-    //      Vector3 scale = transform.localScale;
-    //     scale.x *= -1; // balik sumbu X
-    //     transform.localScale = scale;
-    //  }
+      // ambil skala sekarang
+          Vector3 scale = transform.localScale;
+         scale.x *= -1; // balik sumbu X
+         transform.localScale = scale;
+      }
 
     void Update()
     {
+        Debug.Log($"[Update] canMove: {canMove}, moveInput: {moveInput}");
         if (!canMove)
         {
             // hentikan semua input
@@ -99,16 +101,17 @@ public class PlayerControler : MonoBehaviour
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
+        transform.position += new Vector3(moveInput.x, moveInput.y, 0) * moveSpeed * Time.deltaTime;
         // 🔄 Balik arah seluruh animasi
 
-        // if (moveInput.x > 0.1f && !facingRight)
-        // {
-        //     Flip();
-        // }
-        //  else if (moveInput.x < -0.1f && facingRight)
-        //  {
-        //      Flip();
-        //  }
+        if (moveInput.x > 0.1f && !facingRight)
+         {
+             Flip();
+         }
+          else if (moveInput.x < -0.1f && facingRight)
+          {
+              Flip();
+          }
 
         // Update animasi jalan
         anim.SetBool("isWalking", moveInput.magnitude > 0.1f);
@@ -156,7 +159,15 @@ public class PlayerControler : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
+        if (canMove)
+        {
+            // rb.velocity = moveInput * moveSpeed;
+            // transform.position += new Vector3(moveInput.x, moveInput.y, 0) * moveSpeed * Time.deltaTime;
+        }
+        else
+        {
+            // rb.velocity = Vector2.zero;
+        }
     }
 
     void Burn() //logic kebakar
@@ -211,10 +222,12 @@ public class PlayerControler : MonoBehaviour
 
     void DieGosong()
     {
+          Debug.Log("🔥 DieGosong() called!");
         currentLives--;
 
         if (currentLives > 0)
         {
+            anim.SetTrigger("Spawn"); // 🔥 tambah ini
             Debug.Log("Player kehilangan 1 nyawa! Sisa: " + currentLives);
 
             // Reset pain tolerance
@@ -241,6 +254,7 @@ public class PlayerControler : MonoBehaviour
 
     void Die()
     {
+        anim.SetTrigger("Die");
         Debug.Log("Player mati (HP habis)");
         // TODO: animasi/game over
     }
@@ -331,6 +345,7 @@ public class PlayerControler : MonoBehaviour
     }
     public void TakeDamage(int damage)
     {
+        Debug.Log("💢 TakeDamage() called!");
         if (SceneManager.GetActiveScene().name == "Level 0")
         {
             Debug.Log("⚠️ [Tutorial] Player tidak menerima damage di scene Level 0.");
@@ -381,6 +396,7 @@ public class PlayerControler : MonoBehaviour
     public void UnlockMovement()
     {
         canMove = true;
+        Debug.Log("✅ Player unlocked movement");
     }
 
 }

@@ -30,7 +30,7 @@ public class EnemyIMO : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer;
     private Collider2D coll;
-    private bool facingRight = false;
+    //private bool facingRight = false;
 
     public static EnemyIMO currentPuller = null;
     public bool canAttack = false;
@@ -86,26 +86,34 @@ public class EnemyIMO : MonoBehaviour
             return;
         }
 
-        if (playerInside && !isAttacking)
+        // === 🔥 Deteksi jarak manual (ganti fungsi trigger/collision) ===
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (!hasNotifiedTutorial && distanceToPlayer < 1.2f)
         {
-            stayTimer += Time.deltaTime;
-            if (stayTimer >= stayTimeToTrigger && Time.time >= lastAttackTime + attackCooldown)
+            hasNotifiedTutorial = true;
+            var tut = FindObjectOfType<TutorialManager>();
+            if (tut != null)
             {
-                StartCoroutine(Attack());
-                stayTimer = 0f;
+                tut.NotifyMonsterTouchedPlayer(this);
+                Debug.Log($"📩 [#{debugID}] Lapor ke TutorialManager (deteksi via jarak: {distanceToPlayer:F2}).");
             }
         }
-        else
+
+        // === Logic serangan (auto mulai kalau dekat dan boleh menyerang) ===
+        if (distanceToPlayer <= attackRange && canAttack && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
         {
-            stayTimer = 0f;
+            StartCoroutine(Attack());
         }
 
+        // === Gerak ke arah player (selama tidak menyerang) ===
         if (!isAttacking)
         {
             Vector2 direction = (player.position - transform.position).normalized;
             rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
         }
     }
+
 
     IEnumerator Attack()
     {
@@ -190,9 +198,10 @@ public class EnemyIMO : MonoBehaviour
         }
     }
 
-    void OnTriggerStay2D(Collider2D col)
+    void OnCollisionStay2D(Collision2D collision)
     {
-        if (!col.CompareTag("Player")) return;
+        Debug.Log($"[#{debugID}] 🔍 OnCollisionStay2D terpanggil dengan {collision.collider.name}");
+        if (!collision.collider.CompareTag("Player")) return;
 
         if (!hasNotifiedTutorial)
         {
@@ -201,7 +210,7 @@ public class EnemyIMO : MonoBehaviour
             if (tut != null)
             {
                 tut.NotifyMonsterTouchedPlayer(this);
-                Debug.Log($"📩 [#{debugID}] Lapor ke TutorialManager (first contact).");
+                Debug.Log($"📩 [#{debugID}] Lapor ke TutorialManager (first contact, via Collision).");
             }
         }
 
@@ -209,12 +218,17 @@ public class EnemyIMO : MonoBehaviour
         {
             if (noDamageInTutorial)
             {
-                Debug.Log($"[#{debugID}] ❌ Serangan diblokir karena masih tutorial mode.");
+                Debug.Log($"[#{GetInstanceID()}] ❌ Serangan diblokir karena masih tutorial mode (collision).");
                 return;
             }
 
             StartCoroutine(Attack());
         }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log($"🚪 EnemyIMO collided with {collision.collider.name}");
     }
 
     public void SetTutorialManager(TutorialManager t)

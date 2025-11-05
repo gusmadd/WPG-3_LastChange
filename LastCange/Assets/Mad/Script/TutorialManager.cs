@@ -51,8 +51,10 @@ public class TutorialManager : MonoBehaviour
         yield return ShowMessage("<color=#bc282e><i>or who am I.</i></color>");
         yield return ShowMessage("The story is quite long--or perhaps the developer team<br>either dont have time to add the backstory or just... being lazy <i>*cough*</i>");
         yield return ShowMessage("anyway, Let's just cut to the chase shall we?");
-        yield return new WaitUntil(() => PlayerMoved());
         yield return ShowMessage("You seems like already know how to <color=#bc282e>walk around</color>, or if not yet, try to use <color=#bc282e><b>W A S D</b></color> on your keyboard");
+        playerCtrl.UnlockMovement();
+        yield return new WaitUntil(() => PlayerMoved());
+        playerCtrl.LockMovement();
         yield return ShowMessage("Good. ");
         yield return ShowMessage("Now if you think of a hell, <i>what comes first in your mind?.</i>");
         yield return ShowMessage("Scary, boring, ugly, you name it. ");

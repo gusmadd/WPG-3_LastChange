@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour
         if (bgmSource.clip == clip) return; // biar gak restart lagu sama
         bgmSource.clip = clip;
         bgmSource.loop = true;
-        bgmSource.volume = 0.6f;
+        bgmSource.volume = 0.4f;
         bgmSource.Play();
     }
 
