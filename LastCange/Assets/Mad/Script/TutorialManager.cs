@@ -11,6 +11,9 @@ public class TutorialManager : MonoBehaviour
     public TMP_Text tutorialText;
     public float typingSpeed = 0.03f;
 
+    [Header("Typing Effect")]
+    public AudioClip typeSound; // suara per huruf (opsional)
+
     [Header("Tutorial Objects")]
     public GameObject[] lilins;
     public GameObject fireSource;
@@ -33,6 +36,7 @@ public class TutorialManager : MonoBehaviour
     private EnemyIMO currentMonsterScript;
     private float moveCheckDelay = 1f; // waktu tunggu 1 detik
     private float moveTimer = 0f;
+
     private void Start()
     {
         playerCtrl = player.GetComponent<PlayerControler>();
@@ -47,8 +51,10 @@ public class TutorialManager : MonoBehaviour
         yield return ShowMessage("<color=#bc282e><i>or who am I.</i></color>");
         yield return ShowMessage("The story is quite long--or perhaps the developer team<br>either dont have time to add the backstory or just... being lazy <i>*cough*</i>");
         yield return ShowMessage("anyway, Let's just cut to the chase shall we?");
-        yield return new WaitUntil(() => PlayerMoved());
         yield return ShowMessage("You seems like already know how to <color=#bc282e>walk around</color>, or if not yet, try to use <color=#bc282e><b>W A S D</b></color> on your keyboard");
+        playerCtrl.UnlockMovement();
+        yield return new WaitUntil(() => PlayerMoved());
+        playerCtrl.LockMovement();
         yield return ShowMessage("Good. ");
         yield return ShowMessage("Now if you think of a hell, <i>what comes first in your mind?.</i>");
         yield return ShowMessage("Scary, boring, ugly, you name it. ");
@@ -74,7 +80,7 @@ public class TutorialManager : MonoBehaviour
 
         // === 4. Munculkan monster ===
         yield return ShowMessage("And, it's not really a hell if there's no those nasty looking demons.<br>I.. meant it in the worse way.");
-         yield return ShowMessage("<i>Unless if you're into them.</i> Im not judging, eh.");
+        yield return ShowMessage("<i>Unless if you're into them.</i> Im not judging, eh.");
         if (playerCtrl) playerCtrl.enabled = false; // kunci player
         SpawnMonster();
 
@@ -92,71 +98,97 @@ public class TutorialManager : MonoBehaviour
         yield return ShowMessage("But you can’t keep on running away forever, right?");
         yield return ShowMessage("Though, sometimes it's necessary to make your way through them using that <color=#bc282e>sword</color> attached to your limb<br><color=#6cc74b><i>[Press Space bar to attack].</i></color>");
         yield return new WaitForSeconds(0.3f);
-        // aktifkan player & monster untuk pertempuran
+
         if (playerCtrl)
         {
             playerCtrl.enabled = true;
             playerCtrl.UnlockMovement();
-            playerCtrl.canAttack = true; // pastikan kamu punya variabel ini di PlayerControler
+            playerCtrl.canAttack = true;
         }
 
         if (currentMonsterScript)
         {
-            currentMonsterScript.StopAllCoroutines(); // hentikan semua serangan lama
+            currentMonsterScript.StopAllCoroutines();
             currentMonsterScript.noDamageInTutorial = false;
             currentMonsterScript.canAttack = true;
             currentMonsterScript.ResumeMovement();
         }
 
-
         // === 8. Tunggu sampai monster mati ===
         yield return new WaitUntil(() => currentMonster == null || currentMonsterScript == null);
         yield return ShowMessage("Good job there.");
 
-        // === 9. Akhiri tutorial (bisa lanjut ke scene berikut, misal) ===
+        // === 9. Akhiri tutorial ===
         yield return ShowMessage("Now try lit <color=#bc282e>all the candles.</color>");
         yield return new WaitUntil(() => AllCandlesLit());
         yield return ShowMessage("Go inside the portal to escape this place, <i>or so you wish.</i>");
     }
 
-    // ================== UTILITY ==================
+    // ================== SHOW MESSAGE ==================
     IEnumerator ShowMessage(string message)
     {
-        // ?? Kunci player selama teks muncul
         if (playerCtrl != null)
             playerCtrl.LockMovement();
 
         textBoxPanel.SetActive(true);
         tutorialText.text = "";
 
-        foreach (char c in message)
-        {
-            tutorialText.text += c;
-            yield return new WaitForSeconds(typingSpeed);
-        }
+        // Jalankan typing effect baru
+        yield return StartCoroutine(TypeText(message));
 
-        // tunggu sampai pemain tekan Enter
+        // Tunggu Enter untuk lanjut
         yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
 
-        // ?? Buka kunci player setelah teks ditutup
         textBoxPanel.SetActive(false);
         if (playerCtrl != null)
             playerCtrl.UnlockMovement();
     }
 
-    private bool PlayerMoved()
-{
-    // tunggu dulu 1 detik sebelum mulai deteksi pergerakan
-    if (moveTimer < moveCheckDelay)
+    // ================== TYPING EFFECT ==================
+    IEnumerator TypeText(string message)
     {
-        moveTimer += Time.deltaTime;
-        return false;
+        bool insideTag = false;
+        for (int i = 0; i < message.Length; i++)
+        {
+            char c = message[i];
+
+            if (c == '<') insideTag = true;
+            tutorialText.text += c;
+            if (c == '>') insideTag = false;
+
+            if (insideTag) continue;
+
+            // Tekan Enter untuk skip langsung tampil semua teks
+            if (Input.GetKey(KeyCode.Return))
+            {
+                tutorialText.text = message;
+                break;
+            }
+
+
+            // Delay berbeda tergantung tanda baca
+            if (c == '.' || c == '!' || c == '?')
+                yield return new WaitForSeconds(typingSpeed * 10f);
+            else if (c == ',' || c == ';' || c == ':')
+                yield return new WaitForSeconds(typingSpeed * 5f);
+            else
+                yield return new WaitForSeconds(typingSpeed);
+        }
     }
 
-    float distanceMoved = Vector3.Distance(player.transform.position, lastPosition);
-    lastPosition = player.transform.position;
-    return distanceMoved > 0.05f;
-}
+    // ================== UTILITIES ==================
+    private bool PlayerMoved()
+    {
+        if (moveTimer < moveCheckDelay)
+        {
+            moveTimer += Time.deltaTime;
+            return false;
+        }
+
+        float distanceMoved = Vector3.Distance(player.transform.position, lastPosition);
+        lastPosition = player.transform.position;
+        return distanceMoved > 0.05f;
+    }
 
     private bool AnyCandleLit()
     {
@@ -175,7 +207,7 @@ public class TutorialManager : MonoBehaviour
         {
             currentMonster = Instantiate(monsterPrefab, monsterSpawnPoint.position, Quaternion.identity);
             currentMonsterScript = currentMonster.GetComponent<EnemyIMO>();
-            currentMonsterScript.canAttack = false; // monster belum boleh nyerang
+            currentMonsterScript.canAttack = false;
             currentMonsterScript.noDamageInTutorial = true;
             currentMonsterScript.SetTutorialManager(this);
             monsterSpawned = true;
@@ -198,22 +230,18 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator HandleMonsterFirstContact()
     {
-        // ?? Kunci player dan monster dulu
         if (playerCtrl) playerCtrl.enabled = false;
         if (currentMonsterScript) currentMonsterScript.StopMovement();
 
-        // Tunggu sedikit biar textbox sempat muncul
         yield return new WaitForSeconds(0.25f);
 
-        // ?? Izinkan player gerak untuk menghindar
         if (playerCtrl) playerCtrl.enabled = true;
 
-        // ?? Izinkan monster bergerak dan menyerang palsu (tanpa damage)
         if (currentMonsterScript)
         {
             currentMonsterScript.ResumeMovement();
             currentMonsterScript.canAttack = true;
-            currentMonsterScript.noDamageInTutorial = true; // ?? wajib tetap true!
+            currentMonsterScript.noDamageInTutorial = true;
         }
     }
 
@@ -223,6 +251,7 @@ public class TutorialManager : MonoBehaviour
         float dist = Vector3.Distance(player.transform.position, currentMonster.transform.position);
         return dist > 3f;
     }
+
     private bool AllCandlesLit()
     {
         foreach (var lilin in lilins)
@@ -233,5 +262,4 @@ public class TutorialManager : MonoBehaviour
         }
         return true;
     }
-
 }
