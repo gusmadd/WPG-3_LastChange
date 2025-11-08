@@ -202,7 +202,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2887824719735171971}
   m_Layer: 0
-  m_Name: clown prefab
+  m_Name: clown prefab 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
