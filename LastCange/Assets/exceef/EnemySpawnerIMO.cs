@@ -13,6 +13,10 @@ public class EnemySpawnerIMO : MonoBehaviour
     [Header("Special Spawn Points (on burn)")]
     private Transform[] fixedSpawnPoints; // otomatis cari di scene
 
+        [Header("Spawn Effect (frame-based)")]
+    public Sprite[] spawnEffectFrames; // isi 19 sprite di Inspector
+    public float frameRate = 0.05f;    // durasi tiap frame
+
     private int currentEnemies = 0;
     private float timer;
 
@@ -51,6 +55,39 @@ public class EnemySpawnerIMO : MonoBehaviour
         spawnPos.z = 0f;
 
         Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        currentEnemies++;
+    }
+
+    IEnumerator SpawnOneEnemyWithEffect(Vector2 spawnPos)
+    {
+        GameObject newEnemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        newEnemy.SetActive(false);
+
+        EnemyJESTER enemyScript = newEnemy.GetComponent<EnemyJESTER>();
+        if (enemyScript != null)
+            enemyScript.player = player;
+
+        if (spawnEffectFrames != null && spawnEffectFrames.Length > 0)
+        {
+            GameObject fx = new GameObject("SpawnEffect_IMO");
+            fx.transform.position = spawnPos;
+            SpriteRenderer fxSr = fx.AddComponent<SpriteRenderer>();
+            fxSr.sortingOrder = 20;
+
+            for (int i = 0; i < spawnEffectFrames.Length; i++)
+            {
+                fxSr.sprite = spawnEffectFrames[i];
+                yield return new WaitForSeconds(frameRate);
+            }
+
+            Destroy(fx);
+        }
+        else
+        {
+            yield return null;
+        }
+
+        newEnemy.SetActive(true);
         currentEnemies++;
     }
 

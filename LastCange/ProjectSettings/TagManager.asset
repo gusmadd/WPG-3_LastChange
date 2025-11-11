@@ -10,7 +10,7 @@ TagManager:
   - Enemy
   - Portal
   - Obstacle
-  - light
+  - FixedSpawner
   layers:
   - Default
   - TransparentFX
@@ -24,7 +24,7 @@ TagManager:
   - Environment
   - UI World
   - Player
-  - light
+  - 
   - 
   - 
   - 

@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 74465715}
   m_Layer: 0
   m_Name: FixedSpawner (7)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 134927394}
   m_Layer: 0
   m_Name: FixedSpawner (4)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 250706244}
   m_Layer: 0
   m_Name: FixedSpawner (3)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 289411705}
   m_Layer: 0
   m_Name: FixedSpawner (6)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 523462968}
   m_Layer: 0
   m_Name: FixedSpawner (2)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1130,7 +1130,7 @@ GameObject:
   - component: {fileID: 1138364323}
   m_Layer: 0
   m_Name: FixedSpawner (1)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2090,6 +2090,7 @@ MonoBehaviour:
   maxEnemies: 3
   spawnEffectFrames: []
   frameRate: 0.05
+  fixedSpawners: []
 --- !u!4 &1589622411
 Transform:
   m_ObjectHideFlags: 0
@@ -2388,7 +2389,7 @@ GameObject:
   - component: {fileID: 1714591684}
   m_Layer: 0
   m_Name: FixedSpawner (8)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2706,7 +2707,7 @@ GameObject:
   - component: {fileID: 2062866484}
   m_Layer: 0
   m_Name: FixedSpawner (5)
-  m_TagString: Untagged
+  m_TagString: FixedSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3251,7 +3252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1304464156625381082, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.39600986
+      value: 0.3960099
       objectReference: {fileID: 0}
     - target: {fileID: 1449396263333372107, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3303,7 +3304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2855032629412956452, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.42096478
+      value: -0.42096484
       objectReference: {fileID: 0}
     - target: {fileID: 5120876703407542436, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: spawnPoint
