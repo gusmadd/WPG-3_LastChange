@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Portal
   - Obstacle
+  - light
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - Environment
   - UI World
   - Player
-  - 
+  - light
   - 
   - 
   - 
