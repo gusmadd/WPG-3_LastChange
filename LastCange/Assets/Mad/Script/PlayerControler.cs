@@ -179,22 +179,40 @@ public class PlayerControler : MonoBehaviour
         }
     }
     void StartBurning()
-    {
-        apiMC.SetActive(true);
-        if (!isBurning)
-        {
-            isBurning = true;
-            hasFlame = true;
-            Debug.Log("Player mulai terbakar (pakai E)!");
-            GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
-        }
+{
+    apiMC.SetActive(true);
 
-        if (painBarUI != null)
+    if (!isBurning)
+    {
+        isBurning = true;
+        hasFlame = true;
+        Debug.Log("Player mulai terbakar (pakai E)!");
+
+        // 🎵 Nyalain SFX api
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
+
+        // 🔥 Spawn IMO saat player mulai kebakar
+        var spawner = FindObjectOfType<EnemySpawnerIMO>();
+        if (spawner != null)
         {
-            painBarUI.SetActive(true);
-            UpdatePainBar(); // langsung sync ke nilai sekarang
+            spawner.SpawnImmediateOnPlayerBurn();
+            Debug.Log("🔥 SpawnImmediateOnPlayerBurn() dipanggil karena player kebakar!");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ EnemySpawnerIMO gak ketemu di scene!");
         }
     }
+
+    // Aktifin Pain Bar UI
+    if (painBarUI != null)
+    {
+        painBarUI.SetActive(true);
+        UpdatePainBar(); // langsung sync ke nilai sekarang
+    }
+}
+
 
     void UpdatePainBar()
     {

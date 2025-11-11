@@ -13,11 +13,12 @@ public class EnemySpawnerIMO : MonoBehaviour
     [Header("Spawn Effect")]
     public Sprite[] spawnEffectFrames;  // 19 sprite dari SpawnEffect
     public float frameRate = 0.05f;     // durasi tiap frame (sama kayak di SpawnEffect)
+
     private int currentEnemies = 0;
+    private bool isSpawning = false;
 
     void Start()
     {
-        // Jalankan satu coroutine global
         StartCoroutine(SpawnLoop());
     }
 
@@ -25,8 +26,7 @@ public class EnemySpawnerIMO : MonoBehaviour
     {
         while (true)
         {
-            // hanya spawn kalau belum penuh
-            if (currentEnemies < maxEnemies)
+            if (currentEnemies < maxEnemies && !isSpawning)
             {
                 yield return StartCoroutine(SpawnOneEnemy());
             }
@@ -37,7 +37,9 @@ public class EnemySpawnerIMO : MonoBehaviour
 
     IEnumerator SpawnOneEnemy()
     {
-        // hitung posisi spawn
+        isSpawning = true;
+
+        // hitung posisi spawn di sekitar player
         Vector2 spawnPos = (Vector2)player.position + Random.insideUnitCircle * spawnRadius;
 
         // Buat efek spawn
@@ -49,7 +51,7 @@ public class EnemySpawnerIMO : MonoBehaviour
         fx.destroyOnEnd = true;
         spawnFx.transform.position = spawnPos;
 
-        // Tunggu durasi efek (1 detik)
+        // Tunggu durasi efek spawn (1 detik)
         float totalDuration = spawnEffectFrames.Length * frameRate;
         yield return new WaitForSeconds(totalDuration);
 
@@ -57,16 +59,49 @@ public class EnemySpawnerIMO : MonoBehaviour
         GameObject newEnemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
         EnemyIMO enemyScript = newEnemy.GetComponent<EnemyIMO>();
         if (enemyScript != null)
-        {
             enemyScript.player = player;
-        }
 
         currentEnemies++;
+        isSpawning = false;
     }
 
     public void EnemyDied()
     {
         currentEnemies--;
         if (currentEnemies < 0) currentEnemies = 0;
+    }
+
+    // 🩸 Fungsi baru: Spawn langsung saat player kebakar
+    public void SpawnImmediateOnPlayerBurn()
+    {
+        if (enemyPrefab == null || player == null) return;
+
+        // Boleh spawn walaupun sudah menyentuh maxEnemies (biar gak ganggu spawner utama)
+        Vector2 spawnPos = (Vector2)player.position + Random.insideUnitCircle * spawnRadius;
+
+        // Efek spawn langsung (tanpa delay)
+        GameObject spawnFx = new GameObject("SpawnEffect_Instant");
+        var sr = spawnFx.AddComponent<SpriteRenderer>();
+        var fx = spawnFx.AddComponent<SpawnEffect>();
+        fx.frames = spawnEffectFrames;
+        fx.frameRate = frameRate;
+        fx.destroyOnEnd = true;
+        spawnFx.transform.position = spawnPos;
+
+        // Spawn musuh langsung setelah efek muncul
+        StartCoroutine(SpawnAfterDelay(spawnPos));
+    }
+
+    IEnumerator SpawnAfterDelay(Vector2 pos)
+    {
+        float totalDuration = spawnEffectFrames.Length * frameRate;
+        yield return new WaitForSeconds(totalDuration);
+
+        GameObject newEnemy = Instantiate(enemyPrefab, pos, Quaternion.identity);
+        EnemyIMO enemyScript = newEnemy.GetComponent<EnemyIMO>();
+        if (enemyScript != null)
+            enemyScript.player = player;
+
+        currentEnemies++;
     }
 }
