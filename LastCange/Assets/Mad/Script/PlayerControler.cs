@@ -178,7 +178,7 @@ public class PlayerControler : MonoBehaviour
             DieGosong();
         }
     }
-    void StartBurning()
+void StartBurning()
 {
     apiMC.SetActive(true);
 
@@ -193,15 +193,27 @@ public class PlayerControler : MonoBehaviour
             GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
 
         // 🔥 Spawn IMO saat player mulai kebakar
-        var spawner = FindObjectOfType<EnemySpawnerIMO>();
-        if (spawner != null)
+        var spawnerIMO = FindObjectOfType<EnemySpawnerIMO>();
+        if (spawnerIMO != null)
         {
-            spawner.SpawnOnPlayerBurn();
-            Debug.Log("🔥spawner.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
+            spawnerIMO.SpawnOnPlayerBurn();
+            Debug.Log("🔥 spawnerIMO.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
         }
         else
         {
             Debug.LogWarning("⚠️ EnemySpawnerIMO gak ketemu di scene!");
+        }
+
+        // 🔥 Spawn JESTER juga
+        var spawnerJESTER = FindObjectOfType<EnemySpawnerJESTER>();
+        if (spawnerJESTER != null)
+        {
+            spawnerJESTER.SpawnOnPlayerBurn();
+            Debug.Log("🤡 spawnerJESTER.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ EnemySpawnerJESTER gak ketemu di scene!");
         }
     }
 
@@ -416,5 +428,5 @@ public class PlayerControler : MonoBehaviour
         canMove = true;
         Debug.Log("✅ Player unlocked movement");
     }
-
 }
+

@@ -14,6 +14,9 @@ public class EnemySpawnerJESTER : MonoBehaviour
     public Sprite[] spawnEffectFrames; // isi 19 sprite di Inspector
     public float frameRate = 0.05f;    // durasi tiap frame
 
+    [Header("Fixed Spawn Points (untuk player burn)")]
+    public Transform[] fixedSpawners; // isi dengan FixedSpawner (1)-(8)
+
     private int currentEnemies = 0;
     private bool isSpawning = false;
 
@@ -40,24 +43,20 @@ public class EnemySpawnerJESTER : MonoBehaviour
 
     IEnumerator SpawnOneEnemyWithEffect(Vector2 spawnPos)
     {
-        // 1) instantiate enemy but deactivate it so it doesn't act/move yet
         GameObject newEnemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
         newEnemy.SetActive(false);
 
-        // assign player reference if present
         EnemyJESTER enemyScript = newEnemy.GetComponent<EnemyJESTER>();
         if (enemyScript != null)
             enemyScript.player = player;
 
-        // 2) play spawn effect frame-by-frame at spawnPos
         if (spawnEffectFrames != null && spawnEffectFrames.Length > 0)
         {
             GameObject fx = new GameObject("SpawnEffect_Jester");
             fx.transform.position = spawnPos;
             SpriteRenderer fxSr = fx.AddComponent<SpriteRenderer>();
-            fxSr.sortingOrder = 20; // tampil di depan, ubah kalau perlu
+            fxSr.sortingOrder = 20;
 
-            // play frames
             for (int i = 0; i < spawnEffectFrames.Length; i++)
             {
                 fxSr.sprite = spawnEffectFrames[i];
@@ -68,11 +67,9 @@ public class EnemySpawnerJESTER : MonoBehaviour
         }
         else
         {
-            // jika tidak ada frames, tunggu sedikit agar spawn timing konsisten
             yield return null;
         }
 
-        // 3) activate enemy after effect finished
         newEnemy.SetActive(true);
         currentEnemies++;
     }
@@ -82,4 +79,29 @@ public class EnemySpawnerJESTER : MonoBehaviour
         currentEnemies--;
         if (currentEnemies < 0) currentEnemies = 0;
     }
+
+    // 🧨 dipanggil pas player kebakar
+    // 🃏 Spawn langsung saat player kebakar (tanpa ganggu spawner utama)
+public void SpawnOnPlayerBurn()
+{
+    if (enemyPrefab == null || player == null) return;
+
+    // pilih posisi spawn random dari 6 titik FixedSpawner
+    GameObject[] fixedSpawners = GameObject.FindGameObjectsWithTag("FixedSpawner");
+    if (fixedSpawners.Length > 0)
+    {
+        int randomIndex = Random.Range(0, fixedSpawners.Length);
+        Vector2 spawnPos = fixedSpawners[randomIndex].transform.position;
+        StartCoroutine(SpawnOneEnemyWithEffect(spawnPos));
+    }
+    else
+    {
+        // fallback kalau gak ada FixedSpawner, spawn di sekitar player
+        Vector2 spawnPos = (Vector2)player.position + Random.insideUnitCircle * spawnRadius;
+        StartCoroutine(SpawnOneEnemyWithEffect(spawnPos));
+    }
+
+    Debug.Log("🎭 JESTER spawn karena player kebakar!");
+}
+
 }
