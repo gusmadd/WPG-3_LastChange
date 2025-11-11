@@ -196,8 +196,8 @@ public class PlayerControler : MonoBehaviour
         var spawner = FindObjectOfType<EnemySpawnerIMO>();
         if (spawner != null)
         {
-            spawner.SpawnImmediateOnPlayerBurn();
-            Debug.Log("🔥 SpawnImmediateOnPlayerBurn() dipanggil karena player kebakar!");
+            spawner.SpawnOnPlayerBurn();
+            Debug.Log("🔥spawner.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
         }
         else
         {
