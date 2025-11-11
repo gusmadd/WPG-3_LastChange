@@ -20,6 +20,9 @@ public class EnemyJESTER : MonoBehaviour
     public float damageDelay = 0.5f;
     public float stayTimeToTrigger = 1.2f;
 
+    [Header("VFX")]
+    public float flashDuration = 0.15f; // Durasi musuh berubah merah
+
     private float lastAttackTime;
     private bool isAttacking = false;
     private bool playerInside = false;
@@ -27,6 +30,8 @@ public class EnemyJESTER : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
+    private SpriteRenderer sr; // Tambahan: Komponen untuk mengubah warna
+    private Color originalColor; // Tambahan: Untuk menyimpan warna sprite asli
     public static EnemyJESTER currentAttacker = null;
     public LayerMask obstacleMask;
 
@@ -36,6 +41,10 @@ public class EnemyJESTER : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>(); // Dapatkan komponen SpriteRenderer
+
+        if (sr != null)
+            originalColor = sr.color; // Simpan warna asli
 
         // 🔒 Biar ga muter muter 360°
         rb.freezeRotation = true;
@@ -144,6 +153,33 @@ public class EnemyJESTER : MonoBehaviour
         }
     }
 
+    // ⭐ Tambahan: Fungsi yang dipanggil ketika musuh menerima damage
+    public void TakeDamage(int damage)
+    {
+        // 🚨 Masukkan logika pengurangan HP musuh di sini
+        // Misalnya: currentHealth -= damage;
+        // if (currentHealth <= 0) Die();
+
+        // Memulai efek flash warna
+        StartCoroutine(FlashRed());
+    }
+
+    // ⭐ Tambahan: Coroutine untuk mengubah warna sprite
+    IEnumerator FlashRed()
+    {
+        if (sr != null)
+        {
+            // Ubah warna menjadi merah terang
+            sr.color = Color.red;
+
+            // Tunggu sebentar sesuai durasi yang ditentukan
+            yield return new WaitForSeconds(flashDuration);
+
+            // Kembalikan warna ke warna asli
+            sr.color = originalColor;
+        }
+    }
+
     Vector2 GetSeparationForce()
     {
         Vector2 force = Vector2.zero;
@@ -152,6 +188,7 @@ public class EnemyJESTER : MonoBehaviour
         foreach (Collider2D col in nearby)
         {
             if (col == null || col.gameObject == gameObject) continue;
+            // Gunakan tag "Enemy" atau tag yang sesuai untuk musuh
             if (!col.CompareTag("Enemy")) continue;
 
             Vector2 away = (Vector2)(transform.position - col.transform.position);
@@ -197,4 +234,3 @@ public class EnemyJESTER : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, separationDistance);
     }
 }
-    

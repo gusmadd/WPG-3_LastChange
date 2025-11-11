@@ -30,6 +30,12 @@ public class PlayerControler : MonoBehaviour
     public GameObject apiMC;
     public float burnDamagePerSecond = 10f;
 
+    [Header("Interaction Prompt")]
+    public GameObject[] fireSources;   // semua sumber api di scene
+    public GameObject[] interactHints; // semua icon "E" (satu per api)
+    public float hintPopDuration = 0.3f;
+    public float hintTargetScale = 1f;
+
     [Header("UI Pain Bar")]
     public Image painFill; // drag FillBar (merah)
     public GameObject painBarUI; // drag parent PainBar (yang ada empty + fill)
@@ -59,6 +65,10 @@ public class PlayerControler : MonoBehaviour
     private bool facingRight = true;
     [HideInInspector] public bool canAttack = true; // 🔥 Tambahan
 
+    [Header("Attack Effect")]
+    public GameObject attackEffectPrefab; // drag prefab efek serangan
+    public Transform attackPoint;         // titik muncul efek (bisa di depan player)
+
     void Start()
     {
         tutorialManager = FindObjectOfType<TutorialManager>();
@@ -76,16 +86,21 @@ public class PlayerControler : MonoBehaviour
 
         if (painBarUI != null)
             painBarUI.SetActive(false);
+        // 🔥 Tambahan: animasi spawn otomatis kalau bukan tutorial
+        if (SceneManager.GetActiveScene().name != "Level 0")
+        {
+            StartCoroutine(PlayLevelSpawnAnimation());
+        }
     }
     void Flip()
     {
-         facingRight = !facingRight;
+        facingRight = !facingRight;
 
-      // ambil skala sekarang
-          Vector3 scale = transform.localScale;
-         scale.x *= -1; // balik sumbu X
-         transform.localScale = scale;
-      }
+        // ambil skala sekarang
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // balik sumbu X
+        transform.localScale = scale;
+    }
 
     void Update()
     {
@@ -105,13 +120,13 @@ public class PlayerControler : MonoBehaviour
         // 🔄 Balik arah seluruh animasi
 
         if (moveInput.x > 0.1f && !facingRight)
-         {
-             Flip();
-         }
-          else if (moveInput.x < -0.1f && facingRight)
-          {
-              Flip();
-          }
+        {
+            Flip();
+        }
+        else if (moveInput.x < -0.1f && facingRight)
+        {
+            Flip();
+        }
 
         // Update animasi jalan
         anim.SetBool("isWalking", moveInput.magnitude > 0.1f);
@@ -178,52 +193,52 @@ public class PlayerControler : MonoBehaviour
             DieGosong();
         }
     }
-void StartBurning()
-{
-    apiMC.SetActive(true);
-
-    if (!isBurning)
+    void StartBurning()
     {
-        isBurning = true;
-        hasFlame = true;
-        Debug.Log("Player mulai terbakar (pakai E)!");
+        apiMC.SetActive(true);
 
-        // 🎵 Nyalain SFX api
-        if (GameManager.Instance != null)
-            GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
+        if (!isBurning)
+        {
+            isBurning = true;
+            hasFlame = true;
+            Debug.Log("Player mulai terbakar (pakai E)!");
 
-        // 🔥 Spawn IMO saat player mulai kebakar
-        var spawnerIMO = FindObjectOfType<EnemySpawnerIMO>();
-        if (spawnerIMO != null)
-        {
-            spawnerIMO.SpawnOnPlayerBurn();
-            Debug.Log("🔥 spawnerIMO.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ EnemySpawnerIMO gak ketemu di scene!");
+            // 🎵 Nyalain SFX api
+            if (GameManager.Instance != null)
+                GameManager.Instance.PlayLoopSFX(GameManager.Instance.burnLoopSFX);
+
+            // 🔥 Spawn IMO saat player mulai kebakar
+            var spawnerIMO = FindObjectOfType<EnemySpawnerIMO>();
+            if (spawnerIMO != null)
+            {
+                spawnerIMO.SpawnOnPlayerBurn();
+                Debug.Log("🔥 spawnerIMO.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ EnemySpawnerIMO gak ketemu di scene!");
+            }
+
+            // 🔥 Spawn JESTER juga
+            var spawnerJESTER = FindObjectOfType<EnemySpawnerJESTER>();
+            if (spawnerJESTER != null)
+            {
+                spawnerJESTER.SpawnOnPlayerBurn();
+                Debug.Log("🤡 spawnerJESTER.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ EnemySpawnerJESTER gak ketemu di scene!");
+            }
         }
 
-        // 🔥 Spawn JESTER juga
-        var spawnerJESTER = FindObjectOfType<EnemySpawnerJESTER>();
-        if (spawnerJESTER != null)
+        // Aktifin Pain Bar UI
+        if (painBarUI != null)
         {
-            spawnerJESTER.SpawnOnPlayerBurn();
-            Debug.Log("🤡 spawnerJESTER.SpawnOnPlayerBurn() dipanggil karena player kebakar!");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ EnemySpawnerJESTER gak ketemu di scene!");
+            painBarUI.SetActive(true);
+            UpdatePainBar(); // langsung sync ke nilai sekarang
         }
     }
-
-    // Aktifin Pain Bar UI
-    if (painBarUI != null)
-    {
-        painBarUI.SetActive(true);
-        UpdatePainBar(); // langsung sync ke nilai sekarang
-    }
-}
 
 
     void UpdatePainBar()
@@ -252,42 +267,76 @@ void StartBurning()
 
     void DieGosong()
     {
-          Debug.Log("🔥 DieGosong() called!");
+        Debug.Log("🔥 DieGosong() called!");
         currentLives--;
+
+        if (currentLives >= 0)
+        {
+            StartCoroutine(PlayDieAndRespawn());
+        }
+    }
+
+    void Die()
+    {
+        Debug.Log("Player mati karena HP habis.");
+        currentLives--;
+        if (currentLives >= 0)
+        {
+            StartCoroutine(PlayDieAndRespawn());
+        }
+    }
+
+    IEnumerator PlayDieAndRespawn()
+    {
+        // 🔥 Mainkan animasi mati
+        anim.SetTrigger("Die");
+        canMove = false;
+
+        Debug.Log("🎬 Player mati, tunggu animasi Die selesai...");
+
+        // Tunggu 1.5 detik (sesuaikan durasi animasi)
+        yield return new WaitForSeconds(1.5f);
 
         if (currentLives > 0)
         {
-            anim.SetTrigger("Spawn"); // 🔥 tambah ini
-            Debug.Log("Player kehilangan 1 nyawa! Sisa: " + currentLives);
-
-            // Reset pain tolerance
-            currentPain = maxPain;
-            StopBurning();
-
-            // Teleport ke spawn
-            if (spawnPoint != null)
-                transform.position = spawnPoint.position;
-            else
-                transform.position = Vector3.zero; // fallback
-
-            UpdateHeartUI();
+            // Respawn animasi
+            RespawnPlayer();
         }
         else
         {
-            Debug.Log("Game Over! Player kehabisan nyawa.");
-            UpdateHeartUI();
-            // TODO: game over scene / UI
+            Debug.Log("💀 Game Over. Semua nyawa habis!");
             gameObject.SetActive(false);
         }
     }
 
-
-    void Die()
+    void RespawnPlayer()
     {
-        anim.SetTrigger("Die");
-        Debug.Log("Player mati (HP habis)");
-        // TODO: animasi/game over
+        Debug.Log("✨ Respawn player...");
+        if (spawnPoint != null)
+            transform.position = spawnPoint.position;
+        else
+            transform.position = Vector3.zero;
+
+        // Reset kondisi
+        currentPain = maxPain;
+        StopBurning();
+
+        UpdateHeartUI();
+
+        // Mainkan animasi spawn
+        anim.SetTrigger("Spawn");
+        StartCoroutine(EnableMovementAfterSpawn());
     }
+
+    IEnumerator EnableMovementAfterSpawn()
+    {
+        // Tunggu sampai animasi spawn selesai (sesuaikan)
+        yield return new WaitForSeconds(1f);
+        canMove = true;
+        Debug.Log("✅ Player bisa bergerak lagi.");
+    }
+
+
     void UpdateHeartUI()
     {
         if (heartUI == null) return;
@@ -309,52 +358,110 @@ void StartBurning()
         }
     }
 
-
-    private void OnTriggerEnter2D(Collider2D other)  // deteksi sumber api
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("FireSource"))
+        // Cek semua FireSource
+        for (int i = 0; i < fireSources.Length; i++)
         {
-            nearFire = true;
-            Debug.Log("Dekat api. Tekan E untuk terbakar.");
-
-            // === Tambahan untuk tutorial ===
-            if (tutorialManager != null)
+            if (other.gameObject == fireSources[i])
             {
-                tutorialManager.SetPlayerNearFire(true);
+                nearFire = true;
+                Debug.Log("Dekat api ke-" + i + ". Tekan E untuk terbakar.");
+
+                // Aktifkan ikon E untuk api ini
+                if (interactHints[i] != null)
+                    StartCoroutine(AnimateHint(interactHints[i]));
+
+
+                // Untuk Tutorial Manager
+                if (tutorialManager != null)
+                    tutorialManager.SetPlayerNearFire(true);
             }
         }
     }
 
-
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("FireSource"))
+        for (int i = 0; i < fireSources.Length; i++)
         {
-            nearFire = false;
-
-            // === Tambahan untuk tutorial ===
-            if (tutorialManager != null)
+            if (other.gameObject == fireSources[i])
             {
-                tutorialManager.SetPlayerNearFire(false);
+                nearFire = false;
+
+                // Matikan ikon E untuk api ini
+                if (interactHints[i] != null)
+                    interactHints[i].SetActive(false);
+
+                // Untuk Tutorial Manager
+                if (tutorialManager != null)
+                    tutorialManager.SetPlayerNearFire(false);
             }
+        }
+    }
+    IEnumerator AnimateHint(GameObject hint)
+    {
+        hint.SetActive(true);
+        hint.transform.localScale = Vector3.zero;
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / hintPopDuration;
+            float scale = Mathf.Lerp(0f, hintTargetScale, Mathf.SmoothStep(0f, 1f, t));
+            hint.transform.localScale = new Vector3(scale, scale, 1f);
+            yield return null;
+        }
+
+        hint.transform.localScale = new Vector3(hintTargetScale, hintTargetScale, 1f);
+        // loop efek bernafas kecil
+        while (hint.activeSelf)
+        {
+            float pulse = Mathf.Sin(Time.time * 3f) * 0.05f;
+            hint.transform.localScale = Vector3.one * (hintTargetScale + pulse);
+            yield return null;
         }
     }
 
     void Attack()
     {
-        if (!canAttack) return; // 🚫 kalau sedang dikunci tutorial
+        if (!canAttack) return;
         if (Time.time < lastAttackTime + attackCooldown)
-            return; // ⛔ masih cooldown
+            return;
 
-        lastAttackTime = Time.time; // simpan waktu terakhir serang
+        lastAttackTime = Time.time;
         anim.SetTrigger("Attack");
 
+        // 🔊 Suara serangan
         if (GameManager.Instance != null)
             GameManager.Instance.PlaySFX(GameManager.Instance.attackSFX);
 
-        // cari monster dalam radius
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
+        // 💥 Spawn efek visual di depan player
+        if (attackEffectPrefab != null && attackPoint != null)
+        {
+            GameObject fx = Instantiate(attackEffectPrefab, attackPoint.position, attackPoint.rotation);
 
+            // 🔄 Balik arah efek kalau player menghadap kiri
+            if (!facingRight)
+            {
+                SpriteRenderer fxRenderer = fx.GetComponent<SpriteRenderer>();
+                if (fxRenderer != null)
+                {
+                    fxRenderer.flipX = true;
+                }
+                else
+                {
+                    fxRenderer = fx.GetComponentInChildren<SpriteRenderer>();
+                    if (fxRenderer != null)
+                        fxRenderer.flipX = true;
+                }
+            }
+
+            // 🧷 Biar efek slash ikut posisi attackPoint (nggak ketinggalan)
+            fx.transform.SetParent(attackPoint);
+        }
+
+        // 🔻 Cari musuh di radius serangan
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, monsterLayer);
         foreach (Collider2D enemy in hitEnemies)
         {
             Monster monster = enemy.GetComponent<Monster>();
@@ -362,10 +469,34 @@ void StartBurning()
             {
                 monster.TakeDamage(attackDamage);
                 Debug.Log("💥 Monster kena serangan!");
+
+                // Knockback kecil ke musuh
+                Vector2 knockDir = (enemy.transform.position - transform.position).normalized;
+                Rigidbody2D rbEnemy = enemy.GetComponent<Rigidbody2D>();
+                if (rbEnemy != null)
+                    rbEnemy.AddForce(knockDir * 5f, ForceMode2D.Impulse);
             }
         }
 
         Debug.Log("Player menyerang!");
+
+        // 🔒 Lock movement sementara (1 detik)
+        StartCoroutine(LockMovementForSeconds(0.6f));
+    }
+
+    private IEnumerator LockMovementForSeconds(float duration)
+    {
+        canMove = false;
+        canAttack = false;
+
+        // Pastikan player benar-benar diam
+        rb.velocity = Vector2.zero;
+
+        yield return new WaitForSeconds(duration);
+
+        canMove = true;
+        canAttack = true;
+        Debug.Log("✅ Player bisa gerak lagi setelah attack.");
     }
     // buat visual debug di editor
     void OnDrawGizmosSelected()
@@ -428,5 +559,52 @@ void StartBurning()
         canMove = true;
         Debug.Log("✅ Player unlocked movement");
     }
+    public IEnumerator PlaySpawnAnimation()
+    {
+        canMove = false;
+        anim.SetTrigger("Spawn");
+        Debug.Log("🎬 Player Spawn animation started...");
+
+        // Tunggu durasi animasi (ubah sesuai panjang animasimu)
+        yield return new WaitForSeconds(1.5f);
+
+        canMove = true;
+        Debug.Log("✅ Player Spawn animation finished.");
+    }
+    // 🔥 Fungsi baru: animasi spawn di awal level
+    private IEnumerator PlayLevelSpawnAnimation()
+    {
+        canMove = false;
+        canAttack = false;
+
+        // Pastikan animasi "Spawn" ada di Animator
+        if (anim != null)
+            anim.SetTrigger("Spawn");
+
+        // Efek fade in / muncul pelan (opsional, kalau mau)
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            Color c = sr.color;
+            c.a = 0f;
+            sr.color = c;
+
+            float durasi = 1.5f;
+            float elapsed = 0f;
+            while (elapsed < durasi)
+            {
+                elapsed += Time.deltaTime;
+                c.a = Mathf.Lerp(0f, 1f, elapsed / durasi);
+                sr.color = c;
+                yield return null;
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f); // waktu jeda sebelum bisa gerak
+        canMove = true;
+        canAttack = true;
+        Debug.Log("✨ Player spawn animation done, movement enabled.");
+    }
+
 }
 

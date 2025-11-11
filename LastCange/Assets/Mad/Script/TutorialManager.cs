@@ -19,6 +19,8 @@ public class TutorialManager : MonoBehaviour
     public GameObject fireSource;
     public GameObject monsterPrefab;
     public Transform monsterSpawnPoint;
+    [Header("Portal")]
+    public GameObject portalObject;
 
     [Header("Player Reference")]
     public GameObject player;
@@ -46,6 +48,11 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator TutorialSequence()
     {
+        // 🌀 0. Tampilkan animasi spawn dulu
+        if (playerCtrl != null)
+        {
+            yield return playerCtrl.PlaySpawnAnimation(); // tunggu sampai animasi selesai
+        }
         // === 1. Intro ===
         yield return ShowMessage("Don't ask how you ended up being... this...<br>whatever thing you are right now...");
         yield return ShowMessage("<color=#bc282e><i>or who am I.</i></color>");
@@ -121,6 +128,15 @@ public class TutorialManager : MonoBehaviour
         // === 9. Akhiri tutorial ===
         yield return ShowMessage("Now try lit <color=#bc282e>all the candles.</color>");
         yield return new WaitUntil(() => AllCandlesLit());
+        if (portalObject != null)
+        {
+            portalObject.SetActive(true);
+            Debug.Log("✨ Portal diaktifkan oleh TutorialManager!");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ Portal belum dihubungkan ke TutorialManager!");
+        }
         yield return ShowMessage("Go inside the portal to escape this place, <i>or so you wish.</i>");
     }
 

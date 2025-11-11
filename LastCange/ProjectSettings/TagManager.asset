@@ -51,12 +51,12 @@ TagManager:
   - name: Environment
     uniqueID: 1930161449
     locked: 0
-  - name: Player
-    uniqueID: 404845561
-    locked: 0
-  - name: UI World
-    uniqueID: 1619917081
-    locked: 0
   - name: Monster
     uniqueID: 2649453523
+    locked: 0
+  - name: UI World
+    uniqueID: 4185534451
+    locked: 0
+  - name: Player
+    uniqueID: 2845383935
     locked: 0

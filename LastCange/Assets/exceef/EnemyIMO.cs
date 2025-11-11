@@ -21,6 +21,10 @@ public class EnemyIMO : MonoBehaviour
     public float damageDelay = 0.5f;
     public float stayTimeToTrigger = 1.2f;
 
+    [Header("VFX")]
+    public float flashDuration = 0.15f; // Durasi musuh berubah merah
+    private Color originalColor; // Untuk menyimpan warna sprite asli
+
     private float lastAttackTime;
     private bool isAttacking = false;
     private bool playerInside = false;
@@ -66,6 +70,9 @@ public class EnemyIMO : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         coll = GetComponent<Collider2D>();
 
+        if (spriteRenderer != null)
+            originalColor = spriteRenderer.color; // Simpan warna asli
+
         debugID = Random.Range(1000, 9999);
         Debug.Log($"🧠 EnemyIMO #{debugID} Start() → noDamageInTutorial = {noDamageInTutorial}, canAttack = {canAttack}");
 
@@ -103,7 +110,13 @@ public class EnemyIMO : MonoBehaviour
         // === Logic serangan (auto mulai kalau dekat dan boleh menyerang) ===
         if (distanceToPlayer <= attackRange && canAttack && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
         {
-            StartCoroutine(Attack());
+            Vector2 direction = (player.position - transform.position).normalized;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, attackRange, LayerMask.GetMask("Player", "Map"));
+
+            if (hit.collider != null && hit.collider.CompareTag("Player"))
+            {
+                StartCoroutine(Attack());
+            }
         }
 
         // === Gerak ke arah player (selama tidak menyerang) ===
@@ -114,6 +127,34 @@ public class EnemyIMO : MonoBehaviour
         }
     }
 
+    // ⭐ FUNGSI BARU: Dipanggil saat musuh menerima damage
+    public void TakeDamage(int damage)
+    {
+        // 🚨 Tambahkan logika HP dan pengecekan kematian di sini
+        // Misalnya: currentHealth -= damage;
+        // if (currentHealth <= 0) Die();
+
+        // Memulai efek flash warna
+        StartCoroutine(FlashRed());
+    }
+
+    // ⭐ COROUTINE BARU: Untuk mengubah warna sprite sebentar
+    IEnumerator FlashRed()
+    {
+        if (spriteRenderer != null)
+        {
+            // Ubah warna menjadi merah terang
+            spriteRenderer.color = Color.red;
+
+            // Tunggu sebentar sesuai durasi yang ditentukan
+            yield return new WaitForSeconds(flashDuration);
+
+            // Kembalikan warna ke warna asli
+            spriteRenderer.color = originalColor;
+        }
+    }
+
+    // --- KODE ASLI LAINNYA ---
 
     IEnumerator Attack()
     {
