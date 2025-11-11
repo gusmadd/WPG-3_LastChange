@@ -634,6 +634,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 8905414232116002529, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -654,7 +658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 684582798}
   - component: {fileID: 684582799}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Envi-ritual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1569,6 +1573,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 8905414232116002529, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1739,6 +1747,10 @@ PrefabInstance:
     - target: {fileID: 7133410685171378495, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_SortingOrder
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905414232116002529, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2069,8 +2081,6 @@ MonoBehaviour:
   spawnInterval: 7
   spawnRadius: 15
   maxEnemies: 3
-  spawnEffectFrames: []
-  frameRate: 0.05
 --- !u!114 &1589622410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2164,6 +2174,10 @@ PrefabInstance:
     - target: {fileID: 7133410685171378495, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_SortingOrder
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905414232116002529, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2304,6 +2318,10 @@ PrefabInstance:
     - target: {fileID: 7133410685171378495, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_SortingOrder
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905414232116002529, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
