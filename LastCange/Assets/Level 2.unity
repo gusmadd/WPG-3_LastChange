@@ -3050,7 +3050,7 @@ MonoBehaviour:
   stayTime: 5
   uiOffset: {x: 0, y: 6, z: 0}
   scaleInDuration: 0.5
-  maxDetectionRadius: 3
+  maxDetectionRadius: 3.4
   candles:
   - {fileID: 1110306786}
   - {fileID: 1668593581}
@@ -3058,7 +3058,7 @@ MonoBehaviour:
   - {fileID: 1446267052}
   - {fileID: 1649959947}
   - {fileID: 625041903}
-  portalUI: {fileID: 817888816}
+  portalUI: {fileID: 2110688634}
   fillBar: {fileID: 817888818}
   emptyBar: {fileID: 748292805}
   border: {fileID: 1686495334}
@@ -3725,6 +3725,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1059633678597226349, guid: d643175996618e24a84346f263764d0c, type: 3}
+      propertyPath: m_Color.a
+      value: 0.54901963
+      objectReference: {fileID: 0}
     - target: {fileID: 1304464156625381082, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.9182463
