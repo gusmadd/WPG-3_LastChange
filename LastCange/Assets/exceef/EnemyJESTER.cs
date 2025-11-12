@@ -202,20 +202,48 @@ public class EnemyJESTER : MonoBehaviour
         return force;
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-            playerInside = true;
-    }
+// === DETEKSI COLLIDER TRIGGER BUAT SERANGAN ===
+void OnTriggerEnter2D(Collider2D collision)
+{
+    if (!collision.CompareTag("Player")) return;
 
-    void OnTriggerExit2D(Collider2D collision)
+    playerInside = true;
+    Debug.Log($"⚔️ JESTER: Player masuk area serangan (TriggerEnter)");
+
+    // Serang langsung kalau cooldown sudah lewat
+    if (Time.time >= lastAttackTime + attackCooldown && !isAttacking)
     {
-        if (collision.CompareTag("Player"))
+        StartCoroutine(Attack());
+    }
+}
+
+void OnTriggerStay2D(Collider2D collision)
+{
+    if (!collision.CompareTag("Player")) return;
+    if (isAttacking) return;
+
+    // Kalau player masih di area serangan cukup lama → serang lagi
+    if (Time.time >= lastAttackTime + attackCooldown)
+    {
+        stayTimer += Time.deltaTime;
+        if (stayTimer >= stayTimeToTrigger)
         {
-            playerInside = false;
+            Debug.Log($"⚔️ JESTER: Serangan lanjutan (TriggerStay)");
+            StartCoroutine(Attack());
             stayTimer = 0f;
         }
     }
+}
+
+void OnTriggerExit2D(Collider2D collision)
+{
+    if (!collision.CompareTag("Player")) return;
+
+    playerInside = false;
+    stayTimer = 0f;
+    Debug.Log($"🚶‍♂️ JESTER: Player keluar dari area serangan (TriggerExit)");
+}
+
 
     public void Die()
     {

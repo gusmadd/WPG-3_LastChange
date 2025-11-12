@@ -239,38 +239,40 @@ public class EnemyIMO : MonoBehaviour
         }
     }
 
-    void OnCollisionStay2D(Collision2D collision)
+    // === DETEKSI COLLIDER TRIGGER BUAT SERANGAN ===
+void OnTriggerEnter2D(Collider2D other)
+{
+    if (!canAttack || isAttacking) return;
+    if (!other.CompareTag("Player")) return;
+
+    Debug.Log($"⚔️ [#{debugID}] Player masuk area serangan (TriggerEnter)");
+
+    // mulai serangan
+    StartCoroutine(Attack());
+}
+
+void OnTriggerStay2D(Collider2D other)
+{
+    if (!canAttack || isAttacking) return;
+    if (!other.CompareTag("Player")) return;
+
+    // Cegah serangan terlalu sering
+    if (Time.time >= lastAttackTime + attackCooldown)
     {
-        Debug.Log($"[#{debugID}] 🔍 OnCollisionStay2D terpanggil dengan {collision.collider.name}");
-        if (!collision.collider.CompareTag("Player")) return;
-
-        if (!hasNotifiedTutorial)
-        {
-            hasNotifiedTutorial = true;
-            var tut = FindObjectOfType<TutorialManager>();
-            if (tut != null)
-            {
-                tut.NotifyMonsterTouchedPlayer(this);
-                Debug.Log($"📩 [#{debugID}] Lapor ke TutorialManager (first contact, via Collision).");
-            }
-        }
-
-        if (canAttack && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
-        {
-            if (noDamageInTutorial)
-            {
-                Debug.Log($"[#{GetInstanceID()}] ❌ Serangan diblokir karena masih tutorial mode (collision).");
-                return;
-            }
-
-            StartCoroutine(Attack());
-        }
+        Debug.Log($"⚔️ [#{debugID}] Player tetap di area, serangan lanjutan (TriggerStay)");
+        StartCoroutine(Attack());
     }
+}
 
-    void OnCollisionEnter2D(Collision2D collision)
+void OnTriggerExit2D(Collider2D other)
+{
+    if (other.CompareTag("Player"))
     {
-        Debug.Log($"🚪 EnemyIMO collided with {collision.collider.name}");
+        Debug.Log($"🚶‍♂️ [#{debugID}] Player keluar dari area serangan (TriggerExit)");
+        playerInside = false;
+        stayTimer = 0f;
     }
+}
 
     public void SetTutorialManager(TutorialManager t)
     {

@@ -1,12 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
+[RequireComponent(typeof(Collider2D))]
 public class Monster : MonoBehaviour
 {
     [Header("Stats")]
     public int maxHP = 3;
     private int currentHP;
+
+    [Header("Attack")]
+    public int damage = 1;          // jumlah damage ke player
+    public float attackCooldown = 1f; // delay antar serangan
+    private bool canAttack = true;
 
     [Header("Death")]
     public GameObject deathEffect;
@@ -75,5 +80,34 @@ public class Monster : MonoBehaviour
             Instantiate(deathEffect, transform.position, Quaternion.identity);
 
         Destroy(gameObject, 0.3f);
+    }
+
+    // --- serangan ke player ---
+    private void OnTriggerEnter2D(Collider2D collision)
+{
+    Debug.Log($"{gameObject.name} kena trigger sama {collision.name}");
+
+    if (collision.CompareTag("Player") && canAttack)
+    {
+        var player = collision.GetComponent<PlayerControler>();
+        if (player != null)
+        {
+            player.TakeDamage(damage);
+            Debug.Log($"🐊 {gameObject.name} nyerang player dan kasih {damage} damage!");
+            StartCoroutine(AttackCooldown());
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ PlayerControler gak ketemu di object Player!");
+        }
+    }
+}
+
+
+    IEnumerator AttackCooldown()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
     }
 }
