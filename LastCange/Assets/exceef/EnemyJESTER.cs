@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class EnemyJESTER : MonoBehaviour
 {
     [Header("Target")]
@@ -15,13 +16,15 @@ public class EnemyJESTER : MonoBehaviour
     public float separationForce = 3f;
 
     [Header("Attack Settings")]
-    public int damageAmount = 1;
     public float attackCooldown = 1.5f;
     public float damageDelay = 0.5f;
     public float stayTimeToTrigger = 1.2f;
 
     [Header("VFX")]
-    public float flashDuration = 0.15f; // Durasi musuh berubah merah
+    public float flashDuration = 0.15f;
+
+    [Header("Collision")]
+    public LayerMask obstacleMask;
 
     private float lastAttackTime;
     private bool isAttacking = false;
@@ -30,23 +33,18 @@ public class EnemyJESTER : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
-    private SpriteRenderer sr; // Tambahan: Komponen untuk mengubah warna
-    private Color originalColor; // Tambahan: Untuk menyimpan warna sprite asli
+    private SpriteRenderer sr;
+    private Color originalColor;
+    private bool facingRight = true;
     public static EnemyJESTER currentAttacker = null;
-    public LayerMask obstacleMask;
-
-    private bool facingRight = true; // buat auto flip
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        sr = GetComponent<SpriteRenderer>(); // Dapatkan komponen SpriteRenderer
+        sr = GetComponent<SpriteRenderer>();
+        if (sr != null) originalColor = sr.color;
 
-        if (sr != null)
-            originalColor = sr.color; // Simpan warna asli
-
-        // 🔒 Biar ga muter muter 360°
         rb.freezeRotation = true;
 
         if (player == null)
@@ -68,42 +66,37 @@ public class EnemyJESTER : MonoBehaviour
     {
         if (player == null || isAttacking) return;
 
-        Vector2 direction = (player.position - transform.position).normalized;
-        Vector2 separation = GetSeparationForce();
-        Vector2 finalDir = (direction + separation).normalized;
+        // Hitung jarak ke player
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        float checkDist = 0.6f;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, finalDir, checkDist, obstacleMask);
-
-        if (hit.collider == null)
+        // Kalau player dekat, langsung serang
+        if (distanceToPlayer <= attackRange && Time.time >= lastAttackTime + attackCooldown)
         {
-            rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
-            if (anim != null) anim.SetBool("isMoving", true);
+            StartCoroutine(Attack());
         }
         else
         {
-            if (anim != null) anim.SetBool("isMoving", false);
-        }
+            // Gerak ke player
+            Vector2 direction = (player.position - transform.position).normalized;
+            Vector2 separation = GetSeparationForce();
+            Vector2 finalDir = (direction + separation).normalized;
 
-        // 🔁 Auto flip arah berdasarkan posisi player
-        if (player != null)
-        {
-            if (player.position.x > transform.position.x && !facingRight)
-                Flip();
-            else if (player.position.x < transform.position.x && facingRight)
-                Flip();
-        }
-
-        if (playerInside && Time.time >= lastAttackTime + attackCooldown)
-        {
-            stayTimer += Time.deltaTime;
-            if (stayTimer >= stayTimeToTrigger)
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, finalDir, 0.6f, obstacleMask);
+            if (hit.collider == null)
             {
-                StartCoroutine(Attack());
-                stayTimer = 0f;
+                rb.MovePosition(rb.position + finalDir * moveSpeed * Time.deltaTime);
+                if (anim != null) anim.SetBool("isMoving", true);
             }
+            else if (anim != null) anim.SetBool("isMoving", false);
+
+            AutoFlip();
         }
-        else stayTimer = 0f;
+    }
+
+    void AutoFlip()
+    {
+        if (player.position.x > transform.position.x && !facingRight) Flip();
+        else if (player.position.x < transform.position.x && facingRight) Flip();
     }
 
     void Flip()
@@ -119,20 +112,28 @@ public class EnemyJESTER : MonoBehaviour
         isAttacking = true;
         lastAttackTime = Time.time;
 
-        if (anim != null)
-            anim.SetTrigger("Attack");
-
+        if (anim != null) anim.SetTrigger("Attack");
         yield return new WaitForSeconds(damageDelay);
 
         if (currentAttacker == null && player != null)
         {
             currentAttacker = this;
+
+            // 🔥 Panggil Monster script untuk deal damage
+            Monster monsterScript = GetComponent<Monster>();
+            if (monsterScript != null)
+            {
+                monsterScript.SendMessage("DealDamageToPlayer", SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                // fallback kalau Monster ga ada
+                PlayerControler playerScript = player.GetComponent<PlayerControler>();
+                if (playerScript != null)
+                    playerScript.TakeDamage(1); // default damage
+            }
+
             yield return StartCoroutine(PushPlayer());
-
-            var playerScript = player.GetComponent<PlayerControler>();
-            if (playerScript != null)
-                playerScript.TakeDamage(damageAmount);
-
             currentAttacker = null;
         }
 
@@ -153,33 +154,6 @@ public class EnemyJESTER : MonoBehaviour
         }
     }
 
-    // ⭐ Tambahan: Fungsi yang dipanggil ketika musuh menerima damage
-    public void TakeDamage(int damage)
-    {
-        // 🚨 Masukkan logika pengurangan HP musuh di sini
-        // Misalnya: currentHealth -= damage;
-        // if (currentHealth <= 0) Die();
-
-        // Memulai efek flash warna
-        StartCoroutine(FlashRed());
-    }
-
-    // ⭐ Tambahan: Coroutine untuk mengubah warna sprite
-    IEnumerator FlashRed()
-    {
-        if (sr != null)
-        {
-            // Ubah warna menjadi merah terang
-            sr.color = Color.red;
-
-            // Tunggu sebentar sesuai durasi yang ditentukan
-            yield return new WaitForSeconds(flashDuration);
-
-            // Kembalikan warna ke warna asli
-            sr.color = originalColor;
-        }
-    }
-
     Vector2 GetSeparationForce()
     {
         Vector2 force = Vector2.zero;
@@ -188,7 +162,6 @@ public class EnemyJESTER : MonoBehaviour
         foreach (Collider2D col in nearby)
         {
             if (col == null || col.gameObject == gameObject) continue;
-            // Gunakan tag "Enemy" atau tag yang sesuai untuk musuh
             if (!col.CompareTag("Enemy")) continue;
 
             Vector2 away = (Vector2)(transform.position - col.transform.position);
@@ -204,8 +177,7 @@ public class EnemyJESTER : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-            playerInside = true;
+        if (collision.CompareTag("Player")) playerInside = true;
     }
 
     void OnTriggerExit2D(Collider2D collision)
@@ -217,15 +189,28 @@ public class EnemyJESTER : MonoBehaviour
         }
     }
 
+    public void TakeDamage(int damage)
+    {
+        StartCoroutine(FlashRed());
+    }
+
+    IEnumerator FlashRed()
+    {
+        if (sr != null)
+        {
+            sr.color = Color.red;
+            yield return new WaitForSeconds(flashDuration);
+            sr.color = originalColor;
+        }
+    }
+
     public void Die()
     {
-        if (currentAttacker == this)
-            currentAttacker = null;
+        if (currentAttacker == this) currentAttacker = null;
         Destroy(gameObject);
 
         EnemySpawnerJESTER spawner = FindObjectOfType<EnemySpawnerJESTER>();
-        if (spawner != null)
-            spawner.EnemyDied();
+        if (spawner != null) spawner.EnemyDied();
     }
 
     void OnDrawGizmosSelected()

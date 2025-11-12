@@ -68,10 +68,6 @@ public class PlayerControler : MonoBehaviour
     [Header("Attack Effect")]
     public GameObject attackEffectPrefab; // drag prefab efek serangan
     public Transform attackPoint;         // titik muncul efek (bisa di depan player)
-    [Header("Game Over UI")]
-    public GameObject gameOverPanel; // drag panel dari canvas
-    public string nextSceneName = "Main Menu"; // nama scene tujuan saat tekan spasi
-    private bool isGameOver = false;
 
     void Start()
     {
@@ -173,12 +169,8 @@ public class PlayerControler : MonoBehaviour
         {
             Attack();
         }
-        // Cek input saat Game Over
-        if (isGameOver && Input.GetKeyDown(KeyCode.Space))
-        {
-            SceneManager.LoadScene(nextSceneName);
-        }
     }
+
 
     void FixedUpdate()
     {
@@ -313,7 +305,7 @@ public class PlayerControler : MonoBehaviour
         else
         {
             Debug.Log("💀 Game Over. Semua nyawa habis!");
-            gameOverPanel();
+            gameObject.SetActive(false);
         }
     }
 
@@ -612,26 +604,6 @@ public class PlayerControler : MonoBehaviour
         canMove = true;
         canAttack = true;
         Debug.Log("✨ Player spawn animation done, movement enabled.");
-    }
-    void GameOver()
-    {
-        isGameOver = true;
-        canMove = false;
-        canAttack = false;
-
-        // Tampilkan panel game over di UI
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
-
-        // Matikan api, animasi, dsb
-        StopBurning();
-        anim.SetBool("isWalking", false);
-
-        // Hentikan semua suara loop kalau ada GameManager
-        if (GameManager.Instance != null)
-            GameManager.Instance.StopLoopSFX();
-
-        Debug.Log("🕹️ Game Over panel muncul. Tekan SPASI untuk lanjut.");
     }
 
 }
