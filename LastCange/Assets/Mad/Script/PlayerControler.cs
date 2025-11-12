@@ -68,6 +68,8 @@ public class PlayerControler : MonoBehaviour
     [Header("Attack Effect")]
     public GameObject attackEffectPrefab; // drag prefab efek serangan
     public Transform attackPoint;         // titik muncul efek (bisa di depan player)
+    [Header("UI Lose Panel")]
+    public GameObject losePanel;
 
     void Start()
     {
@@ -270,9 +272,18 @@ public class PlayerControler : MonoBehaviour
         Debug.Log("🔥 DieGosong() called!");
         currentLives--;
 
-        if (currentLives >= 0)
+        if (currentLives > 0)
         {
             StartCoroutine(PlayDieAndRespawn());
+        }
+        else
+        {
+            Debug.Log("💀 Game Over. Semua nyawa habis!");
+            canMove = false;
+            canAttack = false;
+
+            if (losePanel != null)
+                losePanel.SetActive(true); // tampilkan Lose Panel
         }
     }
 

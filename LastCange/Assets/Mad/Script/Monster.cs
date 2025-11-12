@@ -8,10 +8,14 @@ public class Monster : MonoBehaviour
     [Header("Target")]
     public Transform player;
     public float moveSpeed = 2f;
-    public float attackRange = 2.5f; // universal attack range
+    public float attackRange = 2.5f;
     public int damageAmount = 1;
     public float attackCooldown = 1.5f;
     public float damageDelay = 0.5f;
+
+    [Header("Stats")]
+    public int maxHealth = 3;
+    private int currentHealth;
 
     [Header("VFX")]
     public float flashDuration = 0.15f;
@@ -20,7 +24,7 @@ public class Monster : MonoBehaviour
     [Header("Separation (Optional)")]
     public float separationRadius = 1.2f;
     public float separationStrength = 2f;
-    public string targetTag = "Enemy"; // untuk pisah antar monster
+    public string targetTag = "Enemy";
     public LayerMask obstacleMask;
 
     [Header("Tutorial Mode")]
@@ -55,8 +59,9 @@ public class Monster : MonoBehaviour
         Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
         Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
 
+        currentHealth = maxHealth; // 👈 inisialisasi HP
         debugID = Random.Range(1000, 9999);
-        Debug.Log($"🧠 Monster #{debugID} Awake() done.");
+        Debug.Log($"🧠 Monster #{debugID} Awake() done. HP={currentHealth}");
     }
 
     void Update()
@@ -85,45 +90,43 @@ public class Monster : MonoBehaviour
     }
 
     IEnumerator Attack()
-{
-    if (isAttacking) yield break;
-
-    isAttacking = true;
-    lastAttackTime = Time.time;
-
-    // Trigger animasi serangan
-    if (anim != null)
-        anim.SetTrigger("Attack");
-
-    // Delay sebelum damage (misal animasi serang)
-    yield return new WaitForSeconds(damageDelay);
-
-    // 🦈 Deal damage langsung ke player tanpa tutorial check
-    if (player != null)
     {
-        var playerScript = player.GetComponent<PlayerControler>();
-        if (playerScript != null)
+        if (isAttacking) yield break;
+
+        isAttacking = true;
+        lastAttackTime = Time.time;
+
+        if (anim != null)
+            anim.SetTrigger("Attack");
+
+        yield return new WaitForSeconds(damageDelay);
+
+        if (player != null)
         {
-            Debug.Log("💥 Monster menyerang player langsung!");
-            playerScript.TakeDamage(damageAmount); // DAMAGE!!
+            var playerScript = player.GetComponent<PlayerControler>();
+            if (playerScript != null)
+            {
+                Debug.Log($"💥 Monster #{debugID} menyerang player langsung!");
+                playerScript.TakeDamage(damageAmount);
+            }
         }
+
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
     }
 
-    // Tunggu cooldown sebelum bisa menyerang lagi
-    yield return new WaitForSeconds(attackCooldown);
-    isAttacking = false;
-}
-
-
-    IEnumerator PullPlayer()
-    {
-        // placeholder, biar compile aman
-        yield break;
-    }
-
+    // 🩸 Monster menerima damage
     public void TakeDamage(int damage)
     {
+        currentHealth -= damage;
+        Debug.Log($"💢 Monster #{debugID} kena damage {damage}, sisa HP = {currentHealth}");
+
         StartCoroutine(FlashRed());
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
     }
 
     IEnumerator FlashRed()
@@ -136,7 +139,22 @@ public class Monster : MonoBehaviour
         }
     }
 
-    // --- Separation logic universal ---
+    void Die()
+    {
+        Debug.Log($"☠️ Monster #{debugID} mati.");
+        canAttack = false;
+        isAttacking = false;
+
+        if (anim != null)
+            anim.SetTrigger("Die");
+
+        rb.velocity = Vector2.zero;
+        rb.simulated = false; // nonaktifkan physics biar gak tergeser
+        GetComponent<Collider2D>().enabled = false;
+
+        Destroy(gameObject, 0.6f); // delay sedikit untuk animasi mati
+    }
+
     private Vector2 ComputeSeparation()
     {
         Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, separationRadius);
