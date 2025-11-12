@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Level 3.unity
     guid: 6b0a7b50449bf9a4fb678f9409456cce
+  - enabled: 1
+    path: Assets/Menang.unity
+    guid: 165389c724c14504d92cd327504c9057
   m_configObjects: {}
