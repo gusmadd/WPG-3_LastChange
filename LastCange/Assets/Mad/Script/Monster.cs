@@ -1,30 +1,41 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
-public class Monster : MonoBehaviour
+public class EnemyIMO : MonoBehaviour
 {
-    [Header("Stats")]
-    public int maxHP = 3;
-    private int currentHP;
-
-    [Header("Attack")]
-    public int damage = 1;          // jumlah damage ke player
-    public float attackCooldown = 1f; // delay antar serangan
-    private bool canAttack = true;
-
-    [Header("Death")]
-    public GameObject deathEffect;
-    private Animator anim;
-
-    [Header("Facing")]
+    [Header("Target")]
     public Transform player;
-    private bool facingRight = true;
+
+    [Header("Movement")]
+    public float moveSpeed = 2f;
+    public float attackRange = 1.5f;
+
+    [Header("Attack Settings")]
+    public int damageAmount = 1;
+    public float attackCooldown = 1.5f;
+    public float damageDelay = 0.5f;
+
+    [Header("VFX")]
+    public float flashDuration = 0.15f;
+    private Color originalColor;
+
+    private float lastAttackTime;
+    private bool isAttacking = false;
+    private Rigidbody2D rb;
+    private Animator anim;
+    private SpriteRenderer spriteRenderer;
+
+    [Header("Tutorial Mode")]
+    public bool noDamageInTutorial = false;
 
     void Start()
     {
-        currentHP = maxHP;
+        rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+            originalColor = spriteRenderer.color;
 
         if (player == null)
         {
@@ -32,82 +43,69 @@ public class Monster : MonoBehaviour
             if (p != null)
                 player = p.transform;
         }
+
+        int enemyLayer = LayerMask.NameToLayer("Monster");
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int mapLayer = LayerMask.NameToLayer("Map");
+
+        Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
+        Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
+        Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
     }
 
     void Update()
     {
-        HandleFacing();
+        if (player == null || isAttacking) return;
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (distanceToPlayer <= attackRange && Time.time >= lastAttackTime + attackCooldown)
+        {
+            StartCoroutine(Attack());
+        }
+        else
+        {
+            // Movement
+            Vector2 direction = (player.position - transform.position).normalized;
+            rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
+
+            if (anim != null)
+                anim.SetBool("isMoving", true);
+        }
     }
 
-    void HandleFacing()
+    // Hanya ada 1 Attack coroutine, gak ada duplikat
+    IEnumerator Attack()
     {
-        if (player == null) return;
+        isAttacking = true;
+        lastAttackTime = Time.time;
 
-        float direction = player.position.x - transform.position.x;
-        if (direction > 0 && facingRight)
-            Flip();
-        else if (direction < 0 && !facingRight)
-            Flip();
-    }
+        if (anim != null) anim.SetTrigger("Attack");
 
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
+        yield return new WaitForSeconds(damageDelay);
+
+        var playerScript = player.GetComponent<PlayerControler>();
+        if (playerScript != null && !noDamageInTutorial)
+        {
+            playerScript.TakeDamage(damageAmount);
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
     }
 
     public void TakeDamage(int damage)
     {
-        currentHP -= damage;
-        Debug.Log($"{gameObject.name} kena {damage} damage! HP tersisa: {currentHP}");
-
-        if (anim != null)
-            anim.SetTrigger("Hit");
-
-        if (currentHP <= 0)
-            Die();
+        StartCoroutine(FlashRed());
     }
 
-    void Die()
+    IEnumerator FlashRed()
     {
-        Debug.Log($"{gameObject.name} mati!");
-        if (anim != null)
-            anim.SetTrigger("Die");
-
-        if (deathEffect != null)
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
-
-        Destroy(gameObject, 0.3f);
-    }
-
-    // --- serangan ke player ---
-    private void OnTriggerEnter2D(Collider2D collision)
-{
-    Debug.Log($"{gameObject.name} kena trigger sama {collision.name}");
-
-    if (collision.CompareTag("Player") && canAttack)
-    {
-        var player = collision.GetComponent<PlayerControler>();
-        if (player != null)
+        if (spriteRenderer != null)
         {
-            player.TakeDamage(damage);
-            Debug.Log($"🐊 {gameObject.name} nyerang player dan kasih {damage} damage!");
-            StartCoroutine(AttackCooldown());
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(flashDuration);
+            spriteRenderer.color = originalColor;
         }
-        else
-        {
-            Debug.LogWarning("⚠️ PlayerControler gak ketemu di object Player!");
-        }
-    }
-}
-
-
-    IEnumerator AttackCooldown()
-    {
-        canAttack = false;
-        yield return new WaitForSeconds(attackCooldown);
-        canAttack = true;
     }
 }

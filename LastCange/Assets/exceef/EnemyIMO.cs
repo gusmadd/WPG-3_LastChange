@@ -23,7 +23,7 @@ public class EnemyIMO : MonoBehaviour
 
     [Header("VFX")]
     public float flashDuration = 0.15f; // Durasi musuh berubah merah
-    private Color originalColor; // Untuk menyimpan warna sprite asli
+    protected Color originalColor; // Untuk menyimpan warna sprite asli
 
     private float lastAttackTime;
     private bool isAttacking = false;
