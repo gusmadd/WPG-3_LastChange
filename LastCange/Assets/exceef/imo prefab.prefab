@@ -542,6 +542,7 @@ MonoBehaviour:
   attackCooldown: 1.5
   damageDelay: 0.7
   stayTimeToTrigger: 1.2
+  flashDuration: 0.15
   canAttack: 0
   noDamageInTutorial: 0
   attackEffectSprites: []
@@ -559,9 +560,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36bd16873b6a7364e8b50e7f41cd9ea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 3
-  deathEffect: {fileID: 0}
   player: {fileID: 0}
+  moveSpeed: 2
+  attackRange: 2.5
+  damageAmount: 1
+  attackCooldown: 1.5
+  damageDelay: 0.5
+  maxHealth: 3
+  flashDuration: 0.15
+  separationRadius: 1.2
+  separationStrength: 2
+  targetTag: Enemy
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  noDamageInTutorial: 0
 --- !u!1001 &2987851110898981243
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -684,7 +697,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7165880034659061930, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -7165880034659061930, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingOrder
@@ -694,9 +707,13 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1645513773
       objectReference: {fileID: 0}
+    - target: {fileID: -7165880034659061930, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: -7143818262520823776, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -7143818262520823776, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingOrder
@@ -706,6 +723,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1645513773
       objectReference: {fileID: 0}
+    - target: {fileID: -7143818262520823776, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: -6341612990212509769, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -780,7 +801,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4154801534342044505, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -4154801534342044505, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingOrder
@@ -790,6 +811,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1645513773
       objectReference: {fileID: 0}
+    - target: {fileID: -4154801534342044505, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: -3544889447944083756, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -844,7 +869,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2608102985780763276, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2608102985780763276, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingOrder
@@ -854,6 +879,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1645513773
       objectReference: {fileID: 0}
+    - target: {fileID: 2608102985780763276, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 2805404538631728759, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -884,7 +913,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4600508316499132082, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4600508316499132082, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingOrder
@@ -894,6 +923,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1645513773
       objectReference: {fileID: 0}
+    - target: {fileID: 4600508316499132082, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 4878210216334184893, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.07549338
@@ -924,7 +957,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5638863962959275187, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5638863962959275187, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_SortingOrder
@@ -934,6 +967,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1645513773
       objectReference: {fileID: 0}
+    - target: {fileID: 5638863962959275187, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 6766485126959075108, guid: 62ca09ef3f62ce04ab55c8d9ec8b0e6b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.003686
