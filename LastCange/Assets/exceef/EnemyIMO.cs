@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -13,24 +14,31 @@ public class EnemyIMO : MonoBehaviour
     [Header("Attack")]
     public int damage = 1;
     public float attackCooldown = 1f;
+    public float attackStartDelay = 1f; // delay sebelum monster pertama kali menyerang
     private float lastAttackTime;
+    private bool attackStarted = false;
 
     [Header("Animation")]
     public Animator anim;
 
-    private Monster monster; // HP script
+    private Monster monster; 
     private Rigidbody2D rb;
     private Vector2 moveDir;
 
     // ================================  
     //     TUTORIAL VARIABLES  
     // ================================
-    public bool noDamageInTutorial = false;   // toggle dari luar
-    private bool hasNotifiedTutorial = false; // laporan 1x ke TutorialManager
+    public bool noDamageInTutorial = false;
+    private bool hasNotifiedTutorial = false;
     private TutorialManager tutorialManager;
 
-    private bool canMove = true; // kontrol movement
-    public bool canAttack = true; // kontrol attack dari TutorialManager
+    private bool canMove = true; 
+    public bool canAttack = true; 
+
+    // ================================
+    //     STATIC SHARED ATTACK LOCK
+    // ================================
+    public static EnemyIMO currentAttacker; // shared antar semua monster
 
     void Start()
     {
@@ -96,9 +104,25 @@ public class EnemyIMO : MonoBehaviour
         if (!canAttack)
             return;
 
+        // delay sebelum monster pertama kali menyerang
+        if (!attackStarted)
+        {
+            if (Time.time < lastAttackTime + attackStartDelay)
+                return;
+            attackStarted = true;
+            lastAttackTime = Time.time;
+        }
+
+        // cek cooldown
         if (Time.time < lastAttackTime + attackCooldown)
             return;
 
+        // cek apakah monster lain sedang menyerang
+        if (currentAttacker != null && currentAttacker != this)
+            return;
+
+        // mulai serang
+        currentAttacker = this;
         lastAttackTime = Time.time;
 
         if (anim != null)
@@ -107,19 +131,26 @@ public class EnemyIMO : MonoBehaviour
         float dist = Vector2.Distance(transform.position, player.position);
         if (dist <= attackRange)
         {
-            if (noDamageInTutorial)
+            if (!noDamageInTutorial)
             {
-                Debug.Log($"❌ {name} tidak memberi damage (tutorial mode).");
-                return;
-            }
-
-            PlayerControler pc = player.GetComponent<PlayerControler>();
-            if (pc != null)
-            {
-                pc.TakeDamage(damage);
-                Debug.Log($"{name} menyerang player!");
+                PlayerControler pc = player.GetComponent<PlayerControler>();
+                if (pc != null)
+                {
+                    pc.TakeDamage(damage);
+                    Debug.Log($"{name} menyerang player!");
+                }
             }
         }
+
+        // release slot attacker setelah cooldown
+        StartCoroutine(ReleaseAttackerAfterCooldown());
+    }
+
+    IEnumerator ReleaseAttackerAfterCooldown()
+    {
+        yield return new WaitForSeconds(attackCooldown);
+        if (currentAttacker == this)
+            currentAttacker = null;
     }
 
     void Flip(float xDir)

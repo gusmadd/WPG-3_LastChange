@@ -19,21 +19,56 @@ public class EnemySpawnerIMO : MonoBehaviour
 
     private int currentEnemies = 0;
     private float timer;
+private float minX, maxX, minY, maxY;
 
-    void Start()
+void Start()
+{
+    // Ambil ukuran map otomatis dari SpriteRenderer
+    SpriteRenderer map = GameObject.Find("Map").GetComponent<SpriteRenderer>();
+    if (map != null)
     {
-        // otomatis cari semua gameobject dengan nama "FixedSpawner (1)" sampai "(8)"
-        fixedSpawnPoints = new Transform[8];
-        for (int i = 0; i < 8; i++)
-        {
-            string objName = $"FixedSpawner ({i + 1})";
-            GameObject spawner = GameObject.Find(objName);
-            if (spawner != null)
-                fixedSpawnPoints[i] = spawner.transform;
-            else
-                Debug.LogWarning($"⚠️ {objName} tidak ditemukan di scene!");
-        }
+        minX = map.bounds.min.x;
+        maxX = map.bounds.max.x;
+        minY = map.bounds.min.y;
+        maxY = map.bounds.max.y;
     }
+    else
+    {
+        Debug.LogWarning("⚠️ Map tidak ditemukan, spawn mungkin out of bounds!");
+    }
+}
+
+Vector3 GetValidSpawnPosition()
+{
+    int tries = 0;
+    while (tries < 10)
+    {
+        // ambil posisi random di dalam bounds map
+        float x = Random.Range(minX, maxX);
+        float y = Random.Range(minY, maxY);
+        Vector3 spawnPos = new Vector3(x, y, 0f);
+
+        // cek tabrakan dengan obstacle layer
+        Collider2D hit = Physics2D.OverlapCircle(spawnPos, 0.5f, LayerMask.GetMask("Obstacle"));
+        if (hit == null) // aman
+            return spawnPos;
+
+        tries++;
+    }
+
+    // fallback: spawn di dekat player
+    return player.position;
+}
+
+void SpawnDefault()
+{
+    if (enemyPrefab == null || player == null) return;
+
+    Vector3 spawnPos = GetValidSpawnPosition();
+    Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+    currentEnemies++;
+}
+
 
     void Update()
     {
@@ -44,18 +79,6 @@ public class EnemySpawnerIMO : MonoBehaviour
             SpawnDefault();
             timer = 0f;
         }
-    }
-
-    // 🌀 Spawn acak di sekitar player (default)
-    void SpawnDefault()
-    {
-        if (enemyPrefab == null || player == null) return;
-
-        Vector3 spawnPos = player.position + (Vector3)(Random.insideUnitCircle * spawnRadius);
-        spawnPos.z = 0f;
-
-        Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-        currentEnemies++;
     }
 
     IEnumerator SpawnOneEnemyWithEffect(Vector2 spawnPos)
