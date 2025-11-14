@@ -1435,7 +1435,7 @@ MonoBehaviour:
   - {fileID: 1407995707}
   - {fileID: 108598638}
   fireSource: {fileID: 1170736965}
-  monsterPrefab: {fileID: 6485218125400138156, guid: ea9583cc208788c40a02cd5d4c6f48c6, type: 3}
+  monsterPrefab: {fileID: 8450202691092697666, guid: 488f2eb1e076def4e8e0d786c2caaafe, type: 3}
   monsterSpawnPoint: {fileID: 1088522089}
   portalObject: {fileID: 545074181026172393}
   player: {fileID: 2288122361640226093}

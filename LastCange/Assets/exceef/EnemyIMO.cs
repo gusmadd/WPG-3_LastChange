@@ -1,7 +1,6 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class EnemyIMO : MonoBehaviour
 {
     [Header("Target")]
@@ -10,279 +9,141 @@ public class EnemyIMO : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 2f;
     public float attackRange = 1.5f;
-    public float pullDuration = 0.6f;
-    public float pullSpeed = 5f;
-    public float separationDistance = 1.2f;
-    public float separationForce = 3f;
 
-    [Header("Attack Settings")]
-    public int damageAmount = 1;
-    public float attackCooldown = 1.5f;
-    public float damageDelay = 0.5f;
-    public float stayTimeToTrigger = 1.2f;
-
-    [Header("VFX")]
-    public float flashDuration = 0.15f; // Durasi musuh berubah merah
-    protected Color originalColor; // Untuk menyimpan warna sprite asli
-
+    [Header("Attack")]
+    public int damage = 1;
+    public float attackCooldown = 1f;
     private float lastAttackTime;
-    private bool isAttacking = false;
-    private bool playerInside = false;
-    private float stayTimer = 0f;
 
+    [Header("Animation")]
+    public Animator anim;
+
+    private Monster monster; // HP script
     private Rigidbody2D rb;
-    private Animator anim;
-    private SpriteRenderer spriteRenderer;
-    private Collider2D coll;
-    //private bool facingRight = false;
+    private Vector2 moveDir;
 
-    public static EnemyIMO currentPuller = null;
-    public bool canAttack = false;
-    private bool hasNotifiedTutorial = false;
+    // ================================  
+    //     TUTORIAL VARIABLES  
+    // ================================
+    public bool noDamageInTutorial = false;   // toggle dari luar
+    private bool hasNotifiedTutorial = false; // laporan 1x ke TutorialManager
     private TutorialManager tutorialManager;
-    private bool canMove = true;
 
-    [Header("Tutorial Mode")]
-    public bool noDamageInTutorial = false;
-
-    [Header("Attack Effect Sprite")]
-    public Sprite[] attackEffectSprites; // 🌀 isi 19+ sprite seperti spawn
-    public float effectFrameRate = 0.03f;
-    public Vector3 effectOffset = new Vector3(0f, 0.3f, 0f);
-
-    private int debugID;
+    private bool canMove = true; // kontrol movement
+    public bool canAttack = true; // kontrol attack dari TutorialManager
 
     void Start()
     {
-        int enemyLayer = LayerMask.NameToLayer("Monster");
-        int playerLayer = LayerMask.NameToLayer("Player");
-        int mapLayer = LayerMask.NameToLayer("Map");
-
-        if (enemyLayer >= 0)
-        {
-            Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
-            Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, true);
-            Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, false);
-        }
-
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        coll = GetComponent<Collider2D>();
+        monster = GetComponent<Monster>();
 
-        if (spriteRenderer != null)
-            originalColor = spriteRenderer.color; // Simpan warna asli
-
-        debugID = Random.Range(1000, 9999);
-        Debug.Log($"🧠 EnemyIMO #{debugID} Start() → noDamageInTutorial = {noDamageInTutorial}, canAttack = {canAttack}");
+        if (tutorialManager == null)
+            tutorialManager = FindObjectOfType<TutorialManager>();
 
         if (player == null)
-        {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null)
-                player = p.transform;
-        }
+            player = FindObjectOfType<PlayerControler>().transform;
     }
 
     void Update()
     {
-        if (player == null) return;
-        if (!canMove)
-        {
-            if (anim != null) anim.SetBool("isMoving", false);
+        if (monster != null && monster.IsDead())
             return;
-        }
 
-        // === 🔥 Deteksi jarak manual (ganti fungsi trigger/collision) ===
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (player == null)
+            return;
 
-        if (!hasNotifiedTutorial && distanceToPlayer < 1.2f)
+        float dist = Vector2.Distance(transform.position, player.position);
+
+        // ================================
+        //   NOTIFY TUTORIAL (1x)
+        // ================================
+        if (!hasNotifiedTutorial && dist < 1.2f)
         {
             hasNotifiedTutorial = true;
-            var tut = FindObjectOfType<TutorialManager>();
-            if (tut != null)
-            {
-                tut.NotifyMonsterTouchedPlayer(this);
-                Debug.Log($"📩 [#{debugID}] Lapor ke TutorialManager (deteksi via jarak: {distanceToPlayer:F2}).");
-            }
+            if (tutorialManager != null)
+                tutorialManager.NotifyMonsterTouchedPlayer(this);
+
+            Debug.Log($"📩 {name} lapor ke TutorialManager!");
         }
 
-        // === Logic serangan (auto mulai kalau dekat dan boleh menyerang) ===
-        if (distanceToPlayer <= attackRange && canAttack && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
-        {
-            Vector2 direction = (player.position - transform.position).normalized;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, attackRange, LayerMask.GetMask("Player", "Map"));
+        if (!canMove)
+            return; // freeze movement if tutorial paused
 
-            if (hit.collider != null && hit.collider.CompareTag("Player"))
-            {
-                StartCoroutine(Attack());
-            }
+        // ================================
+        //           MOVEMENT
+        // ================================
+        if (dist > attackRange)
+        {
+            moveDir = (player.position - transform.position).normalized;
+            rb.MovePosition(rb.position + moveDir * moveSpeed * Time.deltaTime);
+
+            if (anim != null)
+                anim.SetBool("isWalking", true);
+
+            Flip(moveDir.x);
         }
-
-        // === Gerak ke arah player (selama tidak menyerang) ===
-        if (!isAttacking)
+        else
         {
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
+            if (anim != null)
+                anim.SetBool("isWalking", false);
+
+            TryAttack();
         }
     }
 
-    // ⭐ FUNGSI BARU: Dipanggil saat musuh menerima damage
-    public void TakeDamage(int damage)
+    void TryAttack()
     {
-        // 🚨 Tambahkan logika HP dan pengecekan kematian di sini
-        // Misalnya: currentHealth -= damage;
-        // if (currentHealth <= 0) Die();
-
-        // Memulai efek flash warna
-        StartCoroutine(FlashRed());
-    }
-
-    // ⭐ COROUTINE BARU: Untuk mengubah warna sprite sebentar
-    IEnumerator FlashRed()
-    {
-        if (spriteRenderer != null)
-        {
-            // Ubah warna menjadi merah terang
-            spriteRenderer.color = Color.red;
-
-            // Tunggu sebentar sesuai durasi yang ditentukan
-            yield return new WaitForSeconds(flashDuration);
-
-            // Kembalikan warna ke warna asli
-            spriteRenderer.color = originalColor;
-        }
-    }
-
-    // --- KODE ASLI LAINNYA ---
-
-    IEnumerator Attack()
-    {
-        if (SceneManager.GetActiveScene().name == "Level 0")
-        {
-            Debug.Log($"[#{debugID}] ❌ Attack dibatalkan karena sedang di scene tutorial (Level 0).");
-            yield break;
-        }
-
         if (!canAttack)
-            yield break;
+            return;
 
-        isAttacking = true;
+        if (Time.time < lastAttackTime + attackCooldown)
+            return;
+
         lastAttackTime = Time.time;
 
         if (anim != null)
             anim.SetTrigger("Attack");
 
-        // 🌀 Spawn efek sprite animasi di depan musuh
-        if (attackEffectSprites != null && attackEffectSprites.Length > 0)
-            StartCoroutine(PlayAttackEffect());
-
-        yield return new WaitForSeconds(damageDelay);
-
-        if (currentPuller == null && player != null)
+        float dist = Vector2.Distance(transform.position, player.position);
+        if (dist <= attackRange)
         {
-            currentPuller = this;
-            var playerScript = player.GetComponent<PlayerControler>();
+            if (noDamageInTutorial)
+            {
+                Debug.Log($"❌ {name} tidak memberi damage (tutorial mode).");
+                return;
+            }
 
-            Debug.Log($"💥 [#{debugID}] Menyerang player di scene {SceneManager.GetActiveScene().name}");
-
-            yield return StartCoroutine(PullPlayer());
-
-            if (playerScript != null)
-                playerScript.TakeDamage(damageAmount);
-
-            currentPuller = null;
-        }
-
-        isAttacking = false;
-    }
-
-    IEnumerator PlayAttackEffect()
-    {
-        GameObject effectObj = new GameObject("AttackEffect");
-        effectObj.transform.position = transform.position + effectOffset;
-        SpriteRenderer sr = effectObj.AddComponent<SpriteRenderer>();
-        sr.sortingOrder = spriteRenderer.sortingOrder + 1;
-
-        float timer = 0f;
-        int frame = 0;
-
-        while (frame < attackEffectSprites.Length)
-        {
-            sr.sprite = attackEffectSprites[frame];
-            frame++;
-            timer += effectFrameRate;
-            yield return new WaitForSeconds(effectFrameRate);
-        }
-
-        Destroy(effectObj);
-    }
-
-    IEnumerator PullPlayer()
-    {
-        if (noDamageInTutorial)
-        {
-            Debug.Log($"🌀 [#{debugID}] PullPlayer() dibatalkan (tutorial mode).");
-            yield break;
-        }
-
-        float elapsed = 0f;
-        Vector2 startPos = player.position;
-        Vector2 targetPos = transform.position + (Vector3)(transform.right * -0.5f);
-
-        while (elapsed < pullDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / pullDuration;
-            player.position = Vector2.Lerp(startPos, targetPos, t);
-            yield return null;
+            PlayerControler pc = player.GetComponent<PlayerControler>();
+            if (pc != null)
+            {
+                pc.TakeDamage(damage);
+                Debug.Log($"{name} menyerang player!");
+            }
         }
     }
 
-    // === DETEKSI COLLIDER TRIGGER BUAT SERANGAN ===
-void OnTriggerEnter2D(Collider2D other)
-{
-    if (!canAttack || isAttacking) return;
-    if (!other.CompareTag("Player")) return;
-
-    Debug.Log($"⚔️ [#{debugID}] Player masuk area serangan (TriggerEnter)");
-
-    // mulai serangan
-    StartCoroutine(Attack());
-}
-
-void OnTriggerStay2D(Collider2D other)
-{
-    if (!canAttack || isAttacking) return;
-    if (!other.CompareTag("Player")) return;
-
-    // Cegah serangan terlalu sering
-    if (Time.time >= lastAttackTime + attackCooldown)
+    void Flip(float xDir)
     {
-        Debug.Log($"⚔️ [#{debugID}] Player tetap di area, serangan lanjutan (TriggerStay)");
-        StartCoroutine(Attack());
+        if (xDir < 0)
+            transform.localScale = new Vector3(1, 1, 1);
+        else if (xDir > 0)
+            transform.localScale = new Vector3(-1, 1, 1);
     }
-}
 
-void OnTriggerExit2D(Collider2D other)
-{
-    if (other.CompareTag("Player"))
+    // ================================
+    //   TUTORIAL CONTROL METHODS
+    // ================================
+    public void SetTutorialManager(TutorialManager tm)
     {
-        Debug.Log($"🚶‍♂️ [#{debugID}] Player keluar dari area serangan (TriggerExit)");
-        playerInside = false;
-        stayTimer = 0f;
-    }
-}
-
-    public void SetTutorialManager(TutorialManager t)
-    {
-        tutorialManager = t;
+        tutorialManager = tm;
     }
 
     public void StopMovement()
     {
         canMove = false;
         rb.velocity = Vector2.zero;
+        if (anim != null)
+            anim.SetBool("isWalking", false);
     }
 
     public void ResumeMovement()
