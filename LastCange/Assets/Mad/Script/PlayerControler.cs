@@ -290,10 +290,21 @@ public class PlayerControler : MonoBehaviour
     void Die()
     {
         Debug.Log("Player mati karena HP habis.");
-        currentLives--;
-        if (currentLives >= 0)
+
+        if (currentLives > 0)
         {
+            // masih punya nyawa -> respawn
             StartCoroutine(PlayDieAndRespawn());
+        }
+        else
+        {
+            // nyawa habis -> kalah
+            Debug.Log("💀 Game Over. Semua nyawa habis!");
+            canMove = false;
+            canAttack = false;
+
+            if (losePanel != null)
+                losePanel.SetActive(true); // tampilkan Lose Panel
         }
     }
 
@@ -537,26 +548,18 @@ public class PlayerControler : MonoBehaviour
             return;
         }
 
-        // Kurangi nyawa player
         currentLives -= damage;
-
-        // Update UI heart
         UpdateHeartUI();
-
-        Debug.Log("Player kena damage! Sisa nyawa: " + currentLives);
 
         if (currentLives <= 0)
         {
-            Die();
+            Die();   // BIARKAN Die() mengurus semuanya
+            return;
         }
-        else
-        {
-            // Respawn ke posisi awal (kalau masih ada nyawa)
-            if (spawnPoint != null)
-                transform.position = spawnPoint.position;
-            else
-                transform.position = Vector3.zero; // fallback
-        }
+
+        // Respawn normal
+        if (spawnPoint != null)
+            transform.position = spawnPoint.position;
     }
 
     public void LockMovement()

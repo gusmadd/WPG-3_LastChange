@@ -3254,7 +3254,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1589622411}
   - component: {fileID: 1589622409}
-  - component: {fileID: 1589622410}
   m_Layer: 0
   m_Name: spawner
   m_TagString: FixedSpawner
@@ -3274,52 +3273,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1c4321d553330d4fbeceb23ad526564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 7461413626124747147, guid: 064a00375458b2a4fb3822c12ff8dd43, type: 3}
+  enemyPrefab: {fileID: 0}
   player: {fileID: 98149751}
   spawnInterval: 7
   spawnRadius: 15
   maxEnemies: 3
   spawnEffectFrames: []
   frameRate: 0.05
---- !u!114 &1589622410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589622408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00de310f3e5dfed4e9f2a7d5e46f9699, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 4636310879666546206, guid: 0419c5c34b0bc8948ae402d110ae25d3, type: 3}
-  player: {fileID: 98149751}
-  spawnInterval: 15
-  spawnRadius: 15
-  maxEnemies: 3
-  spawnEffectFrames:
-  - {fileID: 21300000, guid: c47c4d9a897b87244913a47bb411d4ca, type: 3}
-  - {fileID: 21300000, guid: 682321993501f444084fc764aa8297e7, type: 3}
-  - {fileID: 21300000, guid: 771a171ccfb2a964b9c44df0ac4038c2, type: 3}
-  - {fileID: 21300000, guid: 4c81a4aa8aa3d0241930e4373419cfa0, type: 3}
-  - {fileID: 21300000, guid: 5f3b5922ed8b26646b1d1d9e8c5139cd, type: 3}
-  - {fileID: 21300000, guid: 1751b34a6f9a89e488ef6f8db03ae825, type: 3}
-  - {fileID: 21300000, guid: 6baf93c50b1fce34786dc1d3ec1e7311, type: 3}
-  - {fileID: 21300000, guid: e434aab2ad285de49a9c14d4e0683bfe, type: 3}
-  - {fileID: 21300000, guid: 05e6e1bc7ca70b949826ab749d3ab919, type: 3}
-  - {fileID: 21300000, guid: fbfeff07e9e3faf4bbbd1bb2e6421c3b, type: 3}
-  - {fileID: 21300000, guid: 68104371091bd88448156bd50c3b4c93, type: 3}
-  - {fileID: 21300000, guid: accade8d64baf554990de087b760e01b, type: 3}
-  - {fileID: 21300000, guid: abc1f780f4303e44da4536e08e8e2d4e, type: 3}
-  - {fileID: 21300000, guid: 19c91b9a54e4245488ed4bf401b6bfef, type: 3}
-  - {fileID: 21300000, guid: b0626b594649bc246a3a7e91e974fdc8, type: 3}
-  - {fileID: 21300000, guid: ad10f71cbc5e66b43870eaa128539f80, type: 3}
-  - {fileID: 21300000, guid: 49e0bc0f180d7404fbccaf9e210ccde4, type: 3}
-  - {fileID: 21300000, guid: cb6bc4e42af66854987ce781229e960c, type: 3}
-  - {fileID: 21300000, guid: 5e65ddeb774b93b46ba8c1892abb75de, type: 3}
-  frameRate: 0.05
-  fixedSpawners: []
 --- !u!4 &1589622411
 Transform:
   m_ObjectHideFlags: 0

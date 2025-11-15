@@ -684,7 +684,8 @@ PrefabInstance:
       propertyPath: m_CullTransparentMesh
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2821163014332896758, guid: cb6e06ed4ca59d043b6ba8d0e33aaf73, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -3410,7 +3411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1c4321d553330d4fbeceb23ad526564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 4713470857242014907, guid: 34ee656e03baddf4e8fa7f3ba022777c, type: 3}
+  enemyPrefab: {fileID: 0}
   player: {fileID: 98149751}
   spawnInterval: 7
   spawnRadius: 15
