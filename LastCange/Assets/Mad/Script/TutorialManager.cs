@@ -98,7 +98,7 @@ public class TutorialManager : MonoBehaviour
         if (playerCtrl) playerCtrl.enabled = false;
         SpawnMonster();
 
-        yield return new WaitUntil(() => monsterTouchingPlayer);
+        yield return new WaitUntil(() => IsEnemyTouchingPlayer());
         yield return ShowMessage("Try to get away from them. You can keep run and run away from them.");
 
         yield return HandleMonsterFirstContact();
@@ -297,5 +297,28 @@ public class TutorialManager : MonoBehaviour
                 return false;
         }
         return true;
+    }
+    bool IsEnemyTouchingPlayer()
+    {
+        if (player == null) return false;
+
+        // Adjust ukuran kotak deteksi sesuai ukuran player
+        Vector2 size = new Vector2(1f, 1f);
+
+        Collider2D hit = Physics2D.OverlapBox(
+    player.transform.position,
+    size,
+    0f,
+    LayerMask.GetMask("Monster")
+);
+
+        return hit != null;
+    }
+    private void OnDrawGizmos()
+    {
+        if (player == null) return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(player.transform.position, new Vector3(0.5f, 0.8f, 1));
     }
 }

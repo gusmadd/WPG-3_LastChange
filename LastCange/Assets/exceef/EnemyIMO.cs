@@ -103,6 +103,17 @@ public class EnemyIMO : MonoBehaviour
 
         Debug.Log($"📩 {name} memberi sinyal TUTORIAL: kontak fisik dengan Player!");
     }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (hasNotifiedTutorial) return;
+        if (!collision.collider.CompareTag("Player")) return;
+        if (tutorialManager == null) return;
+
+        hasNotifiedTutorial = true;
+        tutorialManager.NotifyMonsterTouchedPlayer(this);
+
+        Debug.Log($"📩 {name} memberi sinyal TUTORIAL: OnCollisionStay2D Player!");
+    }
 
     // ====================================
     //             ATTACK
