@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &108598639
 Transform:
   m_ObjectHideFlags: 0
@@ -355,6 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flame: {fileID: 1456554147}
   isLit: 0
+  candleLight: {fileID: 1878437386}
 --- !u!212 &108598642
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -375,7 +376,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -422,7 +423,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &113755991
 Transform:
   m_ObjectHideFlags: 0
@@ -682,8 +683,8 @@ MonoBehaviour:
   m_LightType: 1
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.4978442, g: 0.7423044, b: 0.7798742, a: 1}
-  m_Intensity: 3
+  m_Color: {r: 0.369922, g: 0.6579468, b: 0.70440245, a: 1}
+  m_Intensity: 4
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -1435,7 +1436,7 @@ MonoBehaviour:
   - {fileID: 1407995707}
   - {fileID: 108598638}
   fireSource: {fileID: 1170736965}
-  monsterPrefab: {fileID: 8450202691092697666, guid: 488f2eb1e076def4e8e0d786c2caaafe, type: 3}
+  monsterPrefab: {fileID: 4713470857242014907, guid: 34ee656e03baddf4e8fa7f3ba022777c, type: 3}
   monsterSpawnPoint: {fileID: 1088522089}
   portalObject: {fileID: 545074181026172393}
   player: {fileID: 2288122361640226093}
@@ -1584,7 +1585,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -1989,8 +1990,8 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.2
+  m_Color: {r: 0.29559743, g: 0.29559743, b: 0.29559743, a: 1}
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -2441,7 +2442,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1179472383}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -2451,7 +2452,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 2
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -2468,8 +2469,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00020000339, y: -0.000050008297, z: 0}
+    m_Extent: {x: 0.99759996, y: 0.99785, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -2477,7 +2478,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.5
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -2762,7 +2763,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208468517}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -2955,7 +2956,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1407995708
 Transform:
   m_ObjectHideFlags: 0
@@ -2987,6 +2988,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flame: {fileID: 359063012}
   isLit: 0
+  candleLight: {fileID: 1208468519}
 --- !u!212 &1407995711
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3007,7 +3009,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3809,7 +3811,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1878437384}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -4444,7 +4446,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1304464156625381082, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.3960099
+      value: 0.39600986
       objectReference: {fileID: 0}
     - target: {fileID: 1449396263333372107, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4496,7 +4498,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2855032629412956452, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.42096484
+      value: -0.42096478
       objectReference: {fileID: 0}
     - target: {fileID: 5120876703407542436, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: heartUI
@@ -4661,6 +4663,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Api kiri
       objectReference: {fileID: 0}
+    - target: {fileID: 7699631990284717389, guid: 0df7fb6517b48f842a2792273a4a5831, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -4787,6 +4793,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 1179472385}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: victoryPortal
       value: 
       objectReference: {fileID: 545074181026172393}
@@ -4804,8 +4814,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7133410685171378495, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -4937,6 +4951,10 @@ PrefabInstance:
     - target: {fileID: 4967150047955257234, guid: 82b7cbad588cd034abbc5784923bd089, type: 3}
       propertyPath: m_Name
       value: Api Kanan
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967150047955257234, guid: 82b7cbad588cd034abbc5784923bd089, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

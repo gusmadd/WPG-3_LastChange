@@ -14,14 +14,14 @@ public class EnemyIMO : MonoBehaviour
     [Header("Attack")]
     public int damage = 1;
     public float attackCooldown = 1f;
-    public float attackStartDelay = 1f; // delay sebelum monster pertama kali menyerang
+    public float attackStartDelay = 1f;
     private float lastAttackTime;
     private bool attackStarted = false;
 
     [Header("Animation")]
     public Animator anim;
 
-    private Monster monster; 
+    private Monster monster;
     private Rigidbody2D rb;
     private Vector2 moveDir;
 
@@ -32,21 +32,20 @@ public class EnemyIMO : MonoBehaviour
     private bool hasNotifiedTutorial = false;
     private TutorialManager tutorialManager;
 
-    private bool canMove = true; 
-    public bool canAttack = true; 
+    private bool canMove = true;
+    public bool canAttack = true;
 
     // ================================
-    //     STATIC SHARED ATTACK LOCK
+    //     GLOBAL ATTACK LOCK
     // ================================
-    public static EnemyIMO currentAttacker; // shared antar semua monster
+    public static EnemyIMO currentAttacker;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         monster = GetComponent<Monster>();
 
-        if (tutorialManager == null)
-            tutorialManager = FindObjectOfType<TutorialManager>();
+        tutorialManager = FindObjectOfType<TutorialManager>();
 
         if (player == null)
             player = FindObjectOfType<PlayerControler>().transform;
@@ -63,23 +62,14 @@ public class EnemyIMO : MonoBehaviour
         float dist = Vector2.Distance(transform.position, player.position);
 
         // ================================
-        //   NOTIFY TUTORIAL (1x)
+        //   REMOVE OLD DISTANCE DETECT!
         // ================================
-        if (!hasNotifiedTutorial && dist < 1.2f)
-        {
-            hasNotifiedTutorial = true;
-            if (tutorialManager != null)
-                tutorialManager.NotifyMonsterTouchedPlayer(this);
-
-            Debug.Log($"📩 {name} lapor ke TutorialManager!");
-        }
+        // (Sudah dihapus agar tidak double detect)
 
         if (!canMove)
-            return; // freeze movement if tutorial paused
+            return;
 
-        // ================================
-        //           MOVEMENT
-        // ================================
+        // MOVEMENT
         if (dist > attackRange)
         {
             moveDir = (player.position - transform.position).normalized;
@@ -99,29 +89,44 @@ public class EnemyIMO : MonoBehaviour
         }
     }
 
+    // ====================================
+    //   FIX: DETEKSI TUTORIAL PAKAI COLLISION
+    // ====================================
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (hasNotifiedTutorial) return;
+        if (!collision.collider.CompareTag("Player")) return;
+        if (tutorialManager == null) return;
+
+        hasNotifiedTutorial = true;
+        tutorialManager.NotifyMonsterTouchedPlayer(this);
+
+        Debug.Log($"📩 {name} memberi sinyal TUTORIAL: kontak fisik dengan Player!");
+    }
+
+    // ====================================
+    //             ATTACK
+    // ====================================
     void TryAttack()
     {
         if (!canAttack)
             return;
 
-        // delay sebelum monster pertama kali menyerang
         if (!attackStarted)
         {
             if (Time.time < lastAttackTime + attackStartDelay)
                 return;
+
             attackStarted = true;
             lastAttackTime = Time.time;
         }
 
-        // cek cooldown
         if (Time.time < lastAttackTime + attackCooldown)
             return;
 
-        // cek apakah monster lain sedang menyerang
         if (currentAttacker != null && currentAttacker != this)
             return;
 
-        // mulai serang
         currentAttacker = this;
         lastAttackTime = Time.time;
 
@@ -142,7 +147,6 @@ public class EnemyIMO : MonoBehaviour
             }
         }
 
-        // release slot attacker setelah cooldown
         StartCoroutine(ReleaseAttackerAfterCooldown());
     }
 
@@ -161,14 +165,6 @@ public class EnemyIMO : MonoBehaviour
             transform.localScale = new Vector3(-1, 1, 1);
     }
 
-    // ================================
-    //   TUTORIAL CONTROL METHODS
-    // ================================
-    public void SetTutorialManager(TutorialManager tm)
-    {
-        tutorialManager = tm;
-    }
-
     public void StopMovement()
     {
         canMove = false;
@@ -180,5 +176,9 @@ public class EnemyIMO : MonoBehaviour
     public void ResumeMovement()
     {
         canMove = true;
+    }
+    public void SetTutorialManager(TutorialManager tm)
+    {
+        tutorialManager = tm;
     }
 }

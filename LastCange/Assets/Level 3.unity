@@ -208,6 +208,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 1888540114}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (7)
@@ -283,7 +287,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1110306785}
-  - {fileID: 834683068}
   - {fileID: 1668593580}
   - {fileID: 1293220334}
   - {fileID: 1446267051}
@@ -348,7 +351,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 246216461}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -356,9 +359,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -375,8 +378,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -384,7 +387,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -1385,7 +1388,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 479265990}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -1393,9 +1396,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -1412,8 +1415,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1421,7 +1424,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -1634,6 +1637,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 789289156}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (6)
@@ -1979,6 +1986,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 1832130175}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (5)
@@ -2333,7 +2344,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 789289155}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -2341,9 +2352,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -2360,8 +2371,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -2369,7 +2380,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -2477,7 +2488,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834683066}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -2485,9 +2496,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -2504,8 +2515,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -2513,7 +2524,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -2557,11 +2568,11 @@ Transform:
   m_GameObject: {fileID: 834683066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.3738735, y: -6.743217, z: 0.021377414}
-  m_LocalScale: {x: 2.113601, y: 1.9761034, z: 1}
+  m_LocalPosition: {x: -0.24774694, y: -0.24643421, z: 0}
+  m_LocalScale: {x: 4.227202, y: 3.9522069, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 113755991}
+  m_Father: {fileID: 1110306785}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &843754168
 GameObject:
@@ -3077,6 +3088,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 834683067}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin
@@ -3095,7 +3110,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 449882104649303531, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 834683068}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
 --- !u!4 &1110306785 stripped
@@ -3162,8 +3180,8 @@ MonoBehaviour:
   m_LightType: 1
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.4978442, g: 0.7423044, b: 0.7798742, a: 1}
-  m_Intensity: 3
+  m_Color: {r: 0.33143458, g: 0.7284225, b: 0.7924528, a: 1}
+  m_Intensity: 4
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -3331,7 +3349,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1139187433}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -3339,9 +3357,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -3358,8 +3376,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -3367,7 +3385,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -3966,6 +3984,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 479265991}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (2)
@@ -4375,6 +4397,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 246216462}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (3)
@@ -5034,7 +5060,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1625810031}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -5042,9 +5068,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -5061,8 +5087,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -5070,7 +5096,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -5362,6 +5388,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 1139187434}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (4)
@@ -5524,6 +5554,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 1625810032}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (1)
@@ -5670,8 +5704,8 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.2
+  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 1}
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -5743,7 +5777,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1832130174}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -5751,9 +5785,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -5770,8 +5804,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -5779,7 +5813,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -5952,7 +5986,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888540113}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -5960,9 +5994,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -5979,8 +6013,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -5988,7 +6022,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -6280,7 +6314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1304464156625381082, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.3960099
+      value: 0.39600986
       objectReference: {fileID: 0}
     - target: {fileID: 1449396263333372107, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6332,7 +6366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2855032629412956452, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.42096484
+      value: -0.42096478
       objectReference: {fileID: 0}
     - target: {fileID: 5120876703407542436, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: heartUI
@@ -6443,6 +6477,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1735943752}
   - {fileID: 1589622411}
   - {fileID: 977488011}
   - {fileID: 830995278}
@@ -6455,4 +6490,3 @@ SceneRoots:
   - {fileID: 4689469597249266868}
   - {fileID: 1177609223}
   - {fileID: 770614076}
-  - {fileID: 1735943752}

@@ -329,7 +329,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 221695046}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -337,9 +337,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -356,8 +356,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -935,6 +935,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 892917801}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (5)
@@ -1356,7 +1360,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 776624306}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -1364,9 +1368,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -1383,8 +1387,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1392,7 +1396,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -1500,7 +1504,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 892917800}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -1508,9 +1512,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -1536,7 +1540,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -2056,7 +2060,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1037380940}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -2064,9 +2068,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -2083,8 +2087,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -2092,7 +2096,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -2723,6 +2727,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 221695047}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (2)
@@ -2907,8 +2915,8 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.2
+  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 1}
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -3004,6 +3012,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 2126298193}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (3)
@@ -3343,7 +3355,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1589622411}
   - component: {fileID: 1589622409}
-  - component: {fileID: 1589622410}
   m_Layer: 0
   m_Name: Enemy spawner
   m_TagString: Untagged
@@ -3363,11 +3374,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1c4321d553330d4fbeceb23ad526564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 6485218125400138156, guid: ea9583cc208788c40a02cd5d4c6f48c6, type: 3}
+  enemyPrefab: {fileID: 4713470857242014907, guid: 34ee656e03baddf4e8fa7f3ba022777c, type: 3}
   player: {fileID: 98149751}
   spawnInterval: 7
   spawnRadius: 15
-  maxEnemies: 3
+  maxEnemies: 6
   spawnEffectFrames:
   - {fileID: 21300000, guid: c47c4d9a897b87244913a47bb411d4ca, type: 3}
   - {fileID: 21300000, guid: 682321993501f444084fc764aa8297e7, type: 3}
@@ -3389,53 +3400,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: cb6bc4e42af66854987ce781229e960c, type: 3}
   - {fileID: 21300000, guid: 5e65ddeb774b93b46ba8c1892abb75de, type: 3}
   frameRate: 0.05
---- !u!114 &1589622410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589622408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00de310f3e5dfed4e9f2a7d5e46f9699, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 4734014853557465965, guid: 2610daa2be857904db26331337ca4459, type: 3}
-  player: {fileID: 98149751}
-  spawnInterval: 15
-  spawnRadius: 15
-  maxEnemies: 3
-  spawnEffectFrames:
-  - {fileID: 21300000, guid: c47c4d9a897b87244913a47bb411d4ca, type: 3}
-  - {fileID: 21300000, guid: 682321993501f444084fc764aa8297e7, type: 3}
-  - {fileID: 21300000, guid: 771a171ccfb2a964b9c44df0ac4038c2, type: 3}
-  - {fileID: 21300000, guid: 4c81a4aa8aa3d0241930e4373419cfa0, type: 3}
-  - {fileID: 21300000, guid: 5f3b5922ed8b26646b1d1d9e8c5139cd, type: 3}
-  - {fileID: 21300000, guid: 1751b34a6f9a89e488ef6f8db03ae825, type: 3}
-  - {fileID: 21300000, guid: 6baf93c50b1fce34786dc1d3ec1e7311, type: 3}
-  - {fileID: 21300000, guid: e434aab2ad285de49a9c14d4e0683bfe, type: 3}
-  - {fileID: 21300000, guid: 05e6e1bc7ca70b949826ab749d3ab919, type: 3}
-  - {fileID: 21300000, guid: fbfeff07e9e3faf4bbbd1bb2e6421c3b, type: 3}
-  - {fileID: 21300000, guid: 68104371091bd88448156bd50c3b4c93, type: 3}
-  - {fileID: 21300000, guid: accade8d64baf554990de087b760e01b, type: 3}
-  - {fileID: 21300000, guid: abc1f780f4303e44da4536e08e8e2d4e, type: 3}
-  - {fileID: 21300000, guid: 19c91b9a54e4245488ed4bf401b6bfef, type: 3}
-  - {fileID: 21300000, guid: b0626b594649bc246a3a7e91e974fdc8, type: 3}
-  - {fileID: 21300000, guid: ad10f71cbc5e66b43870eaa128539f80, type: 3}
-  - {fileID: 21300000, guid: 49e0bc0f180d7404fbccaf9e210ccde4, type: 3}
-  - {fileID: 21300000, guid: cb6bc4e42af66854987ce781229e960c, type: 3}
-  - {fileID: 21300000, guid: 5e65ddeb774b93b46ba8c1892abb75de, type: 3}
-  frameRate: 0.05
-  fixedSpawners:
-  - {fileID: 1138364323}
-  - {fileID: 523462968}
-  - {fileID: 250706244}
-  - {fileID: 134927394}
-  - {fileID: 2062866484}
-  - {fileID: 289411705}
-  - {fileID: 74465715}
-  - {fileID: 1714591684}
 --- !u!4 &1589622411
 Transform:
   m_ObjectHideFlags: 0
@@ -3499,8 +3463,8 @@ MonoBehaviour:
   m_LightType: 1
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.4978442, g: 0.7423044, b: 0.7798742, a: 1}
-  m_Intensity: 3
+  m_Color: {r: 0.35469314, g: 0.70998967, b: 0.76729554, a: 1}
+  m_Intensity: 4
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -3609,6 +3573,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 776624307}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (4)
@@ -3771,6 +3739,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3619946158826907755, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
+      propertyPath: candleLight
+      value: 
+      objectReference: {fileID: 1037380941}
     - target: {fileID: 5645907259812574540, guid: 732cfc8265a116344ae495461c7298d4, type: 3}
       propertyPath: m_Name
       value: lilin (1)
@@ -5287,7 +5259,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2126298192}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -5295,9 +5267,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.4
   m_Color: {r: 0.44499102, g: 0.93962264, b: 0.92283136, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 0000000029ed0b73d373eb9df32f7af9ff1c99a9
@@ -5314,8 +5286,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0023499727, y: -0.0022000074, z: 0}
-    m_Extent: {x: 1.49745, y: 1.4978, z: 0}
+    m_Center: {x: 0.00019997358, y: -0.000049948692, z: 0}
+    m_Extent: {x: 1.0971999, y: 1.09735, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -5323,7 +5295,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1
+  m_ShapeLightFalloffSize: 0.6
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 0.5, y: 0, z: 0}
@@ -5391,7 +5363,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1304464156625381082, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.3960099
+      value: 0.39600986
       objectReference: {fileID: 0}
     - target: {fileID: 1449396263333372107, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5443,7 +5415,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2855032629412956452, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.42096484
+      value: -0.42096478
       objectReference: {fileID: 0}
     - target: {fileID: 5120876703407542436, guid: d643175996618e24a84346f263764d0c, type: 3}
       propertyPath: heartUI
